@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Control de Almacén en la Nube (Supabase + Excel)</title>
+    <title>Control de Almacén en la Nube (Supabase + Excel + Importación)</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Supabase JS Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- SheetJS (xlsx) para Exportar a Excel -->
+    <!-- SheetJS (xlsx) para Exportar e Importar Excel -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <!-- QRCode.js para Generación -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -121,16 +121,31 @@
                 <div id="categoryTabsContainer" class="flex flex-wrap gap-2"></div>
             </div>
 
-            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 mb-4 flex justify-between items-center">
+            <!-- Barra de Acciones de Inventario (Filtros, Importar y Exportar) -->
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 mb-4 flex flex-wrap justify-between items-center gap-3">
                 <div class="flex items-center space-x-2 text-sm text-slate-600">
                     <i data-lucide="filter" class="w-4 h-4 text-indigo-600"></i>
                     <span class="font-semibold">Filtros por columna activos.</span>
-                </div>
-                <div class="flex items-center space-x-3">
-                    <button onclick="clearInventoryFilters()" class="text-xs text-indigo-600 hover:underline font-medium flex items-center gap-1">
+                    <button onclick="clearInventoryFilters()" class="ml-2 text-xs text-indigo-600 hover:underline font-medium flex items-center gap-1">
                         <i data-lucide="filter-x" class="w-3.5 h-3.5"></i> Limpiar Filtros
                     </button>
-                    <span class="text-slate-300">|</span>
+                </div>
+
+                <!-- Botones de Gestión Excel -->
+                <div class="flex items-center space-x-2">
+                    <!-- Input oculto para carga de archivos -->
+                    <input type="file" id="excelFileInput" accept=".xlsx, .xls" class="hidden" onchange="processExcelImport(event)">
+                    
+                    <button id="btnDownloadTemplate" onclick="downloadExcelTemplate()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition">
+                        <i data-lucide="download" class="w-4 h-4 text-indigo-600"></i>
+                        <span>Descargar Plantilla</span>
+                    </button>
+
+                    <button id="btnImportExcel" onclick="triggerFileInput()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition shadow-sm">
+                        <i data-lucide="file-up" class="w-4 h-4"></i>
+                        <span>Importar Excel</span>
+                    </button>
+
                     <button onclick="exportInventoryToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition shadow-sm">
                         <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
                         <span>Exportar a Excel</span>
@@ -449,7 +464,7 @@
         </div>
     </div>
 
-    <!-- Script Principal con Integración Supabase -->
+    <!-- Script Principal con Integración Supabase e Importación Excel -->
     <script>
         // CREDENCIALES CONFIGURADAS DE SUPABASE
         const SUPABASE_URL = 'https://irujdgjsukvjvtmqwzsp.supabase.co';
@@ -538,6 +553,113 @@
             renderHistory();
             updateStats();
             applyPermissions();
+        }
+
+        // --- FUNCIONES EXCEL (EXPORTAR, DESCARGAR PLANTILLA E IMPORTAR) ---
+        
+        function downloadExcelTemplate() {
+            const templateData = [
+                {
+                    'CODIGO': 'MAT-001',
+                    'MATERIAL': 'Casco de Seguridad Rojo',
+                    'CATEGORIA': 'EPP',
+                    'UNIDAD': 'und',
+                    'STOCK_INICIAL': 20,
+                    'UBICACION': 'Estante A-1'
+                },
+                {
+                    'CODIGO': 'MAT-002',
+                    'MATERIAL': 'Tubería PVC 2"',
+                    'CATEGORIA': 'Fontanería',
+                    'UNIDAD': 'm',
+                    'STOCK_INICIAL': 50,
+                    'UBICACION': 'Rack 3'
+                }
+            ];
+
+            const worksheet = XLSX.utils.json_to_sheet(templateData);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "PlantillaImportacion");
+
+            worksheet['!cols'] = [
+                { wch: 15 }, { wch: 30 }, { wch: 20 }, { wch: 10 }, { wch: 15 }, { wch: 20 }
+            ];
+
+            XLSX.writeFile(workbook, "Plantilla_Importar_Materiales.xlsx");
+        }
+
+        function triggerFileInput() {
+            if (currentUser.role !== 'ADMIN') {
+                alert('Solo los administradores pueden importar datos desde Excel.');
+                return;
+            }
+            document.getElementById('excelFileInput').click();
+        }
+
+        async function processExcelImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+                    const rows = XLSX.utils.sheet_to_json(worksheet);
+
+                    if (rows.length === 0) {
+                        alert('El archivo Excel está vacío.');
+                        return;
+                    }
+
+                    let insertedCount = 0;
+                    let updatedCount = 0;
+
+                    for (const row of rows) {
+                        // Mapeo flexible de columnas (soporta variaciones de minúsculas/mayúsculas)
+                        const code = (row['CODIGO'] || row['Código'] || row['CÓDIGO'] || row['code'] || '').toString().trim().toUpperCase();
+                        const name = (row['MATERIAL'] || row['Material'] || row['Nombre'] || row['name'] || '').toString().trim();
+                        const category = (row['CATEGORIA'] || row['Categoría'] || row['CATEGORÍA'] || row['category'] || 'General').toString().trim();
+                        const unit = (row['UNIDAD'] || row['Unidad'] || row['unit'] || 'und').toString().trim();
+                        const initialStock = parseFloat(row['STOCK_INICIAL'] || row['Stock Inicial'] || row['Stock'] || row['STOCK'] || 0) || 0;
+                        const location = (row['UBICACION'] || row['Ubicación'] || row['UBICACIÓN'] || row['location'] || '').toString().trim();
+
+                        if (!code || !name) continue; // Saltar filas sin datos básicos
+
+                        // Buscar si el material ya existe en la base de datos local por código
+                        const existing = materials.find(m => m.code.toUpperCase() === code);
+                        const id = existing ? existing.id : Date.now().toString() + Math.floor(Math.random() * 1000);
+                        const currentStock = existing ? existing.currentStock : initialStock;
+
+                        const { error } = await db.from('materials').upsert({
+                            id: id,
+                            code: code,
+                            name: name,
+                            category: category,
+                            unit: unit,
+                            initial_stock: existing ? existing.initialStock : initialStock,
+                            current_stock: currentStock,
+                            location: location
+                        });
+
+                        if (!error) {
+                            if (existing) updatedCount++;
+                            else insertedCount++;
+                        }
+                    }
+
+                    alert(`¡Importación completada con éxito!\n\nMateriales nuevos guardados: ${insertedCount}\nMateriales actualizados: ${updatedCount}`);
+                    document.getElementById('excelFileInput').value = '';
+                    fetchAllDataFromSupabase();
+
+                } catch (err) {
+                    alert('Error al procesar el archivo Excel. Verifique el formato e intente nuevamente.');
+                    console.error(err);
+                }
+            };
+            reader.readAsArrayBuffer(file);
         }
 
         function exportInventoryToExcel() {
@@ -669,6 +791,7 @@
             document.getElementById('userRoleDisplay').innerText = currentUser.name;
 
             document.getElementById('btnAddMaterial').style.display = isAdmin ? 'flex' : 'none';
+            document.getElementById('btnImportExcel').style.display = isAdmin ? 'flex' : 'none';
 
             const configInputs = document.querySelectorAll('#configForm input, #btnSaveConfig, #newCategoryInput, #btnAddCatMaster');
             configInputs.forEach(el => el.disabled = !isAdmin);
