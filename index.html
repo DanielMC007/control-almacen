@@ -17,26 +17,9 @@
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        /* CSS para ajuste de texto en una sola fila y redimensionamiento manual de columnas */
+        /* Ajuste de texto en una sola fila sin saltos de línea */
         th, td {
             white-space: nowrap !important;
-        }
-        .resizable-th {
-            position: relative;
-        }
-        .resizer {
-            position: absolute;
-            right: 0;
-            top: 0;
-            height: 100%;
-            width: 5px;
-            background: rgba(203, 213, 225, 0.5);
-            cursor: col-resize;
-            user-select: none;
-        }
-        .resizer:hover, .resizing {
-            background: #6366f1;
-            width: 7px;
         }
     </style>
 </head>
@@ -187,25 +170,25 @@
                 </div>
             </div>
 
-            <!-- Tabla de Inventario con Columnas Redimensionables Manualmente y Texto en 1 Fila -->
+            <!-- Tabla de Inventario Sin Scroll Interno ni Redimensionamiento Manual -->
             <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                <div class="overflow-x-auto">
+                <div>
                     <table id="mainInventoryTable" class="w-full text-left border-collapse">
                         <thead>
                             <tr class="bg-slate-100 border-b border-slate-200 text-slate-700 text-xs uppercase tracking-wider font-semibold">
-                                <th class="py-3 px-3 text-center resizable-th">Foto<div class="resizer"></div></th>
-                                <th class="py-3 px-3 resizable-th">Estado<div class="resizer"></div></th>
-                                <th class="py-3 px-3 resizable-th">Código / SKU<div class="resizer"></div></th>
-                                <th class="py-3 px-3 resizable-th">Material<div class="resizer"></div></th>
-                                <th class="py-3 px-3 resizable-th">Categoría<div class="resizer"></div></th>
-                                <th class="py-3 px-3 text-center resizable-th">Unidad / Abr.<div class="resizer"></div></th>
-                                <th class="py-3 px-3 text-center resizable-th">Stock Inicial<div class="resizer"></div></th>
-                                <th class="py-3 px-3 text-center resizable-th">Stock Actual<div class="resizer"></div></th>
-                                <th class="py-3 px-3 resizable-th">Fecha Ingreso<div class="resizer"></div></th>
-                                <th class="py-3 px-3 resizable-th">Vencimiento<div class="resizer"></div></th>
-                                <th class="py-3 px-3 resizable-th">Ubicación<div class="resizer"></div></th>
-                                <th class="py-3 px-3 text-center resizable-th">Gestión Stock<div class="resizer"></div></th>
-                                <th class="py-3 px-3 text-center resizable-th">Acciones<div class="resizer"></div></th>
+                                <th class="py-3 px-3 text-center">Foto</th>
+                                <th class="py-3 px-3">Estado</th>
+                                <th class="py-3 px-3">Código / SKU</th>
+                                <th class="py-3 px-3">Material</th>
+                                <th class="py-3 px-3">Categoría</th>
+                                <th class="py-3 px-3 text-center">Unidad / Abr.</th>
+                                <th class="py-3 px-3 text-center">Stock Inicial</th>
+                                <th class="py-3 px-3 text-center">Stock Actual</th>
+                                <th class="py-3 px-3">Fecha Ingreso</th>
+                                <th class="py-3 px-3">Vencimiento</th>
+                                <th class="py-3 px-3">Ubicación</th>
+                                <th class="py-3 px-3 text-center">Gestión Stock</th>
+                                <th class="py-3 px-3 text-center">Acciones</th>
                             </tr>
                             <tr class="bg-slate-50 border-b border-slate-200 text-xs">
                                 <th class="p-2 bg-slate-100"></th>
@@ -243,7 +226,7 @@
             </div>
 
             <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                <div class="overflow-x-auto">
+                <div>
                     <table class="w-full text-left border-collapse">
                         <thead>
                             <tr class="bg-slate-100 border-b border-slate-200 text-slate-700 text-xs uppercase tracking-wider font-semibold">
@@ -354,7 +337,7 @@
         </div>
     </main>
 
-    <!-- MODAL: FICHA TÉCNICA DEL MATERIAL (FOTO DEL MATERIAL AL ESCANEAR) -->
+    <!-- MODAL: FICHA TÉCNICA DEL MATERIAL -->
     <div id="cardModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-md hidden items-center justify-center p-3 sm:p-4 z-50">
         <div class="bg-white rounded-2xl max-w-md w-full p-5 sm:p-6 shadow-2xl border border-slate-100 relative max-h-[90vh] overflow-y-auto">
             <button onclick="closeModal('cardModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
@@ -449,7 +432,7 @@
         </div>
     </div>
 
-    <!-- Modal Nuevo / Editar Material (Multiples Abreviaturas) -->
+    <!-- Modal Nuevo / Editar Material -->
     <div id="materialModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center p-3 sm:p-4 z-50">
         <div class="bg-white rounded-xl max-w-md w-full p-5 sm:p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-4 border-b pb-3">
@@ -504,7 +487,7 @@
                 
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">UNIDAD / ABREVIATURA (*)</label>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">UNIDAD / ABR. (*)</label>
                         <select id="matUnit" onchange="toggleCustomUnitInput()" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white text-sm">
                             <option value="">Seleccionar...</option>
                             <option value="und">Unidades (und)</option>
@@ -658,7 +641,7 @@
                 const img = new Image();
                 img.onload = function() {
                     const canvas = document.createElement('canvas');
-                    const MAX_WIDTH = 600;
+                    const MAX_WIDTH = 500;
                     const scaleSize = MAX_WIDTH / img.width;
                     canvas.width = (img.width > MAX_WIDTH) ? MAX_WIDTH : img.width;
                     canvas.height = (img.width > MAX_WIDTH) ? (img.height * scaleSize) : img.height;
@@ -666,7 +649,7 @@
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-                    const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+                    const compressedBase64 = canvas.toDataURL('image/jpeg', 0.6);
 
                     document.getElementById(previewId).src = compressedBase64;
                     document.getElementById(previewId).classList.remove('hidden');
@@ -813,7 +796,7 @@
                 height: 190,
                 colorDark : "#0f172a",
                 colorLight : "#ffffff",
-                correctLevel : QRCode.CorrectLevel.H
+                correctLevel : QRCode.CorrectLevel.M
             });
 
             document.getElementById('qrModal').classList.remove('hidden');
@@ -835,7 +818,6 @@
             renderHistory();
             updateStats();
             applyPermissions();
-            initTableResizableColumns();
         }
 
         function downloadExcelTemplate() {
@@ -885,8 +867,13 @@
                         const category = (row['CATEGORIA'] || row['Categoría'] || row['CATEGORÍA'] || row['category'] || 'General').toString().trim();
                         const unit = (row['UNIDAD'] || row['Unidad'] || row['unit'] || 'und').toString().trim();
                         const initialStock = parseFloat(row['STOCK_INICIAL'] || row['Stock Inicial'] || 0) || 0;
-                        const entryDate = (row['FECHA_INGRESO'] || row['Fecha Ingreso'] || '').toString().trim();
-                        const expirationDate = (row['FECHA_VENCIMIENTO'] || row['Vencimiento'] || '').toString().trim();
+                        
+                        const rawEntryDate = (row['FECHA_INGRESO'] || row['Fecha Ingreso'] || '').toString().trim();
+                        const entryDate = rawEntryDate ? rawEntryDate : null;
+
+                        const rawExpirationDate = (row['FECHA_VENCIMIENTO'] || row['Vencimiento'] || '').toString().trim();
+                        const expirationDate = rawExpirationDate ? rawExpirationDate : null;
+
                         const location = (row['UBICACION'] || row['Ubicación'] || '').toString().trim();
 
                         if (!code || !name) continue;
@@ -1176,44 +1163,6 @@
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-        }
-
-        // REDIMENSIONAMIENTO MANUAL DE COLUMNAS DE LA TABLA (RESIZER)
-        function initTableResizableColumns() {
-            const table = document.getElementById('mainInventoryTable');
-            if (!table) return;
-
-            const cols = table.querySelectorAll('.resizable-th');
-            cols.forEach(col => {
-                const resizer = col.querySelector('.resizer');
-                if (!resizer) return;
-
-                let x = 0;
-                let w = 0;
-
-                const mouseDownHandler = function (e) {
-                    x = e.clientX;
-                    const styles = window.getComputedStyle(col);
-                    w = parseInt(styles.width, 10);
-
-                    document.addEventListener('mousemove', mouseMoveHandler);
-                    document.addEventListener('mouseup', mouseUpHandler);
-                    resizer.classList.add('resizing');
-                };
-
-                const mouseMoveHandler = function (e) {
-                    const dx = e.clientX - x;
-                    col.style.width = `${w + dx}px`;
-                };
-
-                const mouseUpHandler = function () {
-                    document.removeEventListener('mousemove', mouseMoveHandler);
-                    document.removeEventListener('mouseup', mouseUpHandler);
-                    resizer.classList.remove('resizing');
-                };
-
-                resizer.addEventListener('mousedown', mouseDownHandler);
-            });
         }
 
         function openLoginModal() {
@@ -1723,8 +1672,14 @@
             const category = document.getElementById('matCategory').value.trim();
             const initialStockInput = document.getElementById('matInitialStock').value;
             const initialStock = parseFloat(initialStockInput);
-            const entryDate = document.getElementById('matEntryDate').value;
-            const expirationDate = document.getElementById('matExpirationDate').value;
+            
+            // Tratamiento de fechas vacías enviadas como NULL a Supabase
+            const rawEntryDate = document.getElementById('matEntryDate').value;
+            const entryDate = rawEntryDate ? rawEntryDate : null;
+
+            const rawExpirationDate = document.getElementById('matExpirationDate').value;
+            const expirationDate = rawExpirationDate ? rawExpirationDate : null;
+
             const location = document.getElementById('matLocation').value.trim();
             const imageUrl = document.getElementById('matImageBase64').value;
 
