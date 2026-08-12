@@ -17,24 +17,9 @@
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        /* Reglas CSS para proporciones y ajuste limpio de tabla */
+        /* Ajuste de texto en una sola fila sin saltos */
         th, td {
             white-space: nowrap !important;
-        }
-        /* Scrollbar delgada y estética para el contenedor de la tabla */
-        .table-scroll-container::-webkit-scrollbar {
-            height: 6px;
-        }
-        .table-scroll-container::-webkit-scrollbar-track {
-            background: #f1f5f9;
-            border-radius: 4px;
-        }
-        .table-scroll-container::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 4px;
-        }
-        .table-scroll-container::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
         }
     </style>
 </head>
@@ -140,7 +125,7 @@
                     <i data-lucide="history" class="w-4 h-4"></i>
                     <span>Historial Movimientos</span>
                 </button>
-                <button id="tabConfigBtn" onclick="switchTab('config')" class="py-2.5 px-3 sm:px-4 border-b-2 font-semibold text-slate-500 border-transparent hover:text-slate-700 flex items-center space-x-2 text-xs sm:text-sm whitespace-nowrap">
+                <button id="tabConfigBtn" onclick="switchTab('config')" class="py-2.5 px-4 border-b-2 font-semibold text-slate-500 border-transparent hover:text-slate-700 flex items-center space-x-2 text-xs sm:text-sm whitespace-nowrap">
                     <i data-lucide="settings" class="w-4 h-4"></i>
                     <span>Configuración Proyecto</span>
                 </button>
@@ -156,11 +141,26 @@
                 <div id="categoryTabsContainer" class="flex flex-nowrap sm:flex-wrap gap-2 overflow-x-auto pb-1"></div>
             </div>
 
+            <!-- Filtros de Acción y Estado de Vencimiento -->
             <div class="bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-slate-200 mb-4 flex flex-col md:flex-row justify-between items-stretch md:items-center gap-3">
-                <div class="flex items-center space-x-2 text-xs sm:text-sm text-slate-600">
-                    <i data-lucide="filter" class="w-4 h-4 text-indigo-600 shrink-0"></i>
-                    <span class="font-semibold">Filtros activos.</span>
-                    <button onclick="clearInventoryFilters()" class="ml-2 text-xs text-indigo-600 hover:underline font-medium flex items-center gap-1">
+                <div class="flex flex-wrap items-center gap-3 text-xs sm:text-sm text-slate-600">
+                    <div class="flex items-center space-x-2">
+                        <i data-lucide="filter" class="w-4 h-4 text-indigo-600 shrink-0"></i>
+                        <span class="font-semibold">Filtros activos.</span>
+                    </div>
+
+                    <div class="flex items-center space-x-1 bg-slate-50 p-1 rounded-lg border text-xs">
+                        <span class="font-medium text-slate-500 px-1">Vencimiento:</span>
+                        <select id="filterExpirationColor" onchange="renderTable()" class="bg-white border rounded px-2 py-0.5 text-xs font-medium focus:ring-1 focus:ring-indigo-500 focus:outline-none">
+                            <option value="ALL">Todos los estados</option>
+                            <option value="VENCIDO">🔴 Vencidos</option>
+                            <option value="POR_VENCER">🟠 Por Vencer (30 Días)</option>
+                            <option value="VIGENTE">🟢 Vigentes / OK</option>
+                            <option value="SIN_FECHA">⚪ Sin Fecha / N/A</option>
+                        </select>
+                    </div>
+
+                    <button onclick="clearInventoryFilters()" class="text-xs text-indigo-600 hover:underline font-medium flex items-center gap-1">
                         <i data-lucide="filter-x" class="w-3.5 h-3.5"></i> Limpiar
                     </button>
                 </div>
@@ -185,15 +185,15 @@
                 </div>
             </div>
 
-            <!-- Tabla de Inventario con Contenedor Scrollable Proporcional -->
+            <!-- Tabla de Inventario -->
             <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                <div class="overflow-x-auto table-scroll-container">
+                <div class="overflow-x-auto">
                     <table id="mainInventoryTable" class="w-full text-left border-collapse min-w-[1050px]">
                         <thead>
                             <tr class="bg-slate-100 border-b border-slate-200 text-slate-700 text-[11px] uppercase tracking-wider font-semibold">
                                 <th class="py-2.5 px-2 text-center w-12">Foto</th>
                                 <th class="py-2.5 px-2 text-center w-20">Estado</th>
-                                <th class="py-2.5 px-2.5 w-28">Código / SKU</th>
+                                <th class="py-2.5 px-2.5 w-28">Código</th>
                                 <th class="py-2.5 px-2.5 min-w-[160px]">Material</th>
                                 <th class="py-2.5 px-2.5 w-28">Categoría</th>
                                 <th class="py-2.5 px-2 text-center w-20">Unidad</th>
@@ -241,7 +241,7 @@
             </div>
 
             <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                <div class="overflow-x-auto table-scroll-container">
+                <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse min-w-[800px]">
                         <thead>
                             <tr class="bg-slate-100 border-b border-slate-200 text-slate-700 text-xs uppercase tracking-wider font-semibold">
@@ -463,7 +463,7 @@
                 <input type="hidden" id="matId">
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">CÓDIGO / SKU (*)</label>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">CÓDIGO (*)</label>
                         <input type="text" id="matCode" placeholder="Ej: MAT-001" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none uppercase text-sm">
                     </div>
                     <div>
@@ -604,18 +604,24 @@
         </div>
     </div>
 
-    <!-- Modal Escáner QR -->
+    <!-- Modal Escáner QR Directo con Selección/Permiso de Cámara -->
     <div id="scannerModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center p-3 sm:p-4 z-50">
         <div class="bg-white rounded-xl max-w-md w-full p-5 sm:p-6 shadow-2xl">
-            <div class="flex justify-between items-center mb-4">
+            <div class="flex justify-between items-center mb-3">
                 <h3 class="text-base sm:text-lg font-bold text-slate-800">Escanear Código QR</h3>
                 <button onclick="closeScannerModal()" class="text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
-            <div id="reader" class="overflow-hidden rounded-lg border"></div>
+
+            <!-- Contenedor del video donde se dibujará la cámara directamente -->
+            <div id="reader" class="overflow-hidden rounded-lg border bg-slate-900 min-h-[250px] flex items-center justify-center"></div>
+
+            <div id="scannerErrorMessage" class="hidden mt-3 p-2.5 bg-amber-50 border border-amber-200 text-amber-800 rounded-lg text-xs font-medium"></div>
+
             <div id="scanResult" class="mt-4 p-3 bg-slate-100 rounded-lg hidden">
                 <p class="text-xs text-slate-500 font-semibold uppercase">Último código leído:</p>
                 <p id="scannedCodeText" class="font-bold text-indigo-600 text-lg"></p>
             </div>
+
             <button onclick="closeScannerModal()" class="w-full mt-4 py-2 bg-slate-200 text-slate-700 rounded-lg font-medium text-sm hover:bg-slate-300">Cerrar Escáner</button>
         </div>
     </div>
@@ -645,7 +651,7 @@
         let materials = [];
         let logs = [];
         let activeCategoryTab = 'ALL';
-        let html5QrcodeScanner = null;
+        let html5QrCode = null;
 
         function handleImageUpload(event, previewId, base64InputId) {
             const file = event.target.files[0];
@@ -1035,7 +1041,7 @@
                         <thead>
                             <tr>
                                 <th class="th-header" style="width:100px;">ESTADO</th>
-                                <th class="th-header" style="width:120px;">CÓDIGO / SKU</th>
+                                <th class="th-header" style="width:120px;">CÓDIGO</th>
                                 <th class="th-header" style="width:250px;">MATERIAL</th>
                                 <th class="th-header" style="width:140px;">CATEGORÍA</th>
                                 <th class="th-header" style="width:80px;">UNIDAD</th>
@@ -1435,6 +1441,7 @@
             document.getElementById('filterInvEntryDate').value = '';
             document.getElementById('filterInvExpDate').value = '';
             document.getElementById('filterInvLocation').value = '';
+            document.getElementById('filterExpirationColor').value = 'ALL';
             activeCategoryTab = 'ALL';
             renderCategoryTabs();
             renderTable();
@@ -1453,6 +1460,9 @@
             const fEntryDate = document.getElementById('filterInvEntryDate').value.toLowerCase();
             const fExpDate = document.getElementById('filterInvExpDate').value.toLowerCase();
             const fLocation = document.getElementById('filterInvLocation').value.toLowerCase();
+            const fColor = document.getElementById('filterExpirationColor').value;
+
+            const today = new Date().toISOString().split('T')[0];
 
             const filtered = materials.filter(m => {
                 const matCat = (m.category || 'General').toLowerCase();
@@ -1466,7 +1476,23 @@
                 const matchExpDate = (m.expirationDate || '').toLowerCase().includes(fExpDate);
                 const matchLocation = (m.location || '').toLowerCase().includes(fLocation);
 
-                return matchCode && matchName && matchCategory && matchUnit && matchInitial && matchCurrent && matchEntryDate && matchExpDate && matchLocation;
+                let matchColor = true;
+                if (fColor !== 'ALL') {
+                    if (!m.expirationDate) {
+                        matchColor = (fColor === 'SIN_FECHA');
+                    } else {
+                        const expDiffDays = Math.ceil((new Date(m.expirationDate) - new Date()) / (1000 * 60 * 60 * 24));
+                        if (m.expirationDate < today) {
+                            matchColor = (fColor === 'VENCIDO');
+                        } else if (expDiffDays <= 30) {
+                            matchColor = (fColor === 'POR_VENCER');
+                        } else {
+                            matchColor = (fColor === 'VIGENTE');
+                        }
+                    }
+                }
+
+                return matchCode && matchName && matchCategory && matchUnit && matchInitial && matchCurrent && matchEntryDate && matchExpDate && matchLocation && matchColor;
             });
 
             tbody.innerHTML = '';
@@ -1476,8 +1502,6 @@
                 lucide.createIcons();
                 return;
             }
-
-            const today = new Date().toISOString().split('T')[0];
 
             filtered.forEach(mat => {
                 const tr = document.createElement('tr');
@@ -1858,46 +1882,66 @@
             printWindow.document.close();
         }
 
-        function openScannerModal() {
+        // ESCÁNER DE CÁMARA DIRECTO (HTML5QRCODE REFACTORIZADO)
+        async function openScannerModal() {
             document.getElementById('scannerModal').classList.remove('hidden');
             document.getElementById('scannerModal').classList.add('flex');
             document.getElementById('scanResult').classList.add('hidden');
+            
+            const errDiv = document.getElementById('scannerErrorMessage');
+            errDiv.classList.add('hidden');
+            errDiv.innerHTML = '';
 
-            html5QrcodeScanner = new Html5QrcodeScanner(
-                "reader", { fps: 10, qrbox: 250 }, false
-            );
+            try {
+                if (html5QrCode) {
+                    await html5QrCode.stop().catch(() => {});
+                }
 
-            html5QrcodeScanner.render(onScanSuccess, onScanError);
+                html5QrCode = new Html5Qrcode("reader");
+
+                const qrCodeSuccessCallback = (decodedText, decodedResult) => {
+                    document.getElementById('scanResult').classList.remove('hidden');
+                    document.getElementById('scannedCodeText').innerText = decodedText;
+
+                    let searchCode = decodedText.trim();
+                    if (decodedText.includes('?code=')) {
+                        const urlParams = new URLSearchParams(decodedText.split('?')[1]);
+                        searchCode = urlParams.get('code') || decodedText;
+                    }
+
+                    const mat = materials.find(m => m.code.toUpperCase() === searchCode.toUpperCase());
+
+                    if (mat) {
+                        closeScannerModal();
+                        openMaterialCardModal(mat);
+                    } else {
+                        alert(`Código escaneado: "${searchCode}"\n\nNo se encontró ningún material registrado en el inventario.`);
+                    }
+                };
+
+                const configScan = { fps: 10, qrbox: { width: 220, height: 220 } };
+
+                // Iniciar cámara trasera automáticamente
+                await html5QrCode.start(
+                    { facingMode: "environment" },
+                    configScan,
+                    qrCodeSuccessCallback
+                );
+
+            } catch (err) {
+                console.error("Error al acceder a la cámara:", err);
+                errDiv.innerHTML = "📷 <b>Acceso a la cámara denegado o no disponible.</b><br>Por favor, asegúrate de permitir el permiso de cámara en tu navegador o verificar que estés en una conexión segura HTTPS.";
+                errDiv.classList.remove('hidden');
+            }
         }
 
-        function closeScannerModal() {
-            if (html5QrcodeScanner) {
-                html5QrcodeScanner.clear().catch(error => console.error("Error al cerrar scanner", error));
+        async function closeScannerModal() {
+            if (html5QrCode) {
+                await html5QrCode.stop().catch(error => console.error("Error deteniendo el escáner:", error));
+                html5QrCode = null;
             }
             closeModal('scannerModal');
         }
-
-        function onScanSuccess(decodedText) {
-            document.getElementById('scanResult').classList.remove('hidden');
-            document.getElementById('scannedCodeText').innerText = decodedText;
-
-            let searchCode = decodedText.trim();
-            if (decodedText.includes('?code=')) {
-                const urlParams = new URLSearchParams(decodedText.split('?')[1]);
-                searchCode = urlParams.get('code') || decodedText;
-            }
-
-            const mat = materials.find(m => m.code.toUpperCase() === searchCode.toUpperCase());
-
-            if (mat) {
-                closeScannerModal();
-                openMaterialCardModal(mat);
-            } else {
-                alert(`Código escaneado: "${searchCode}"\n\nNo se encontró ningún material registrado en el inventario.`);
-            }
-        }
-
-        function onScanError(errorMessage) {}
 
         // Inicialización
         document.addEventListener("DOMContentLoaded", () => {
