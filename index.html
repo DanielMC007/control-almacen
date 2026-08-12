@@ -23,10 +23,18 @@
     <header class="bg-slate-900 text-white shadow-lg sticky top-0 z-30">
         <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-4">
             <div class="flex items-center space-x-3">
-                <i data-lucide="boxes" class="w-8 h-8 text-indigo-400"></i>
-                <div>
-                    <h1 id="headerProjectName" class="text-lg font-bold tracking-tight leading-tight">Cargando proyecto...</h1>
-                    <p id="headerProjectLocation" class="text-xs text-slate-400">Cargando ubicación...</p>
+                <!-- Logo de Empresa -->
+                <div id="companyLogoContainer" class="w-10 h-10 rounded-lg bg-slate-800 border border-slate-700 overflow-hidden flex items-center justify-center shrink-0">
+                    <i data-lucide="boxes" class="w-6 h-6 text-indigo-400"></i>
+                </div>
+                
+                <!-- Foto e Info del Proyecto -->
+                <div class="flex items-center space-x-2">
+                    <img id="projectImageHeader" src="" alt="Proyecto" class="w-8 h-8 rounded-md object-cover border border-slate-700 hidden">
+                    <div>
+                        <h1 id="headerProjectName" class="text-lg font-bold tracking-tight leading-tight">Cargando proyecto...</h1>
+                        <p id="headerProjectLocation" class="text-xs text-slate-400">Cargando ubicación...</p>
+                    </div>
                 </div>
             </div>
 
@@ -155,6 +163,7 @@
                     <table class="w-full text-left border-collapse">
                         <thead>
                             <tr class="bg-slate-100 border-b border-slate-200 text-slate-700 text-xs uppercase tracking-wider font-semibold">
+                                <th class="py-3 px-3 text-center">Imagen</th>
                                 <th class="py-3 px-3">Código / SKU</th>
                                 <th class="py-3 px-3">Material</th>
                                 <th class="py-3 px-3">Categoría</th>
@@ -166,6 +175,7 @@
                                 <th class="py-3 px-3 text-center">Acciones</th>
                             </tr>
                             <tr class="bg-slate-50 border-b border-slate-200 text-xs">
+                                <th class="p-2 bg-slate-100"></th>
                                 <th class="p-2"><input type="text" id="filterInvCode" oninput="renderTable()" placeholder="Filtrar..." class="w-full px-2 py-1 text-xs border rounded focus:ring-1 focus:ring-indigo-500 focus:outline-none"></th>
                                 <th class="p-2"><input type="text" id="filterInvName" oninput="renderTable()" placeholder="Filtrar..." class="w-full px-2 py-1 text-xs border rounded focus:ring-1 focus:ring-indigo-500 focus:outline-none"></th>
                                 <th class="p-2"><input type="text" id="filterInvCategory" oninput="syncCategoryInput()" placeholder="Filtrar..." class="w-full px-2 py-1 text-xs border rounded focus:ring-1 focus:ring-indigo-500 focus:outline-none"></th>
@@ -256,6 +266,18 @@
                             <label class="block text-xs font-semibold text-slate-600 mb-1">UBICACIÓN / FRENTE DE OBRA</label>
                             <input type="text" id="cfgLocation" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm">
                         </div>
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">URL LOGO EMPRESA (OPCIONAL)</label>
+                                <input type="url" id="cfgCompanyLogo" placeholder="https://..." class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">URL FOTO PROYECTO (OPCIONAL)</label>
+                                <input type="url" id="cfgProjectImage" placeholder="https://..." class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm">
+                            </div>
+                        </div>
+
                         <div class="grid grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-xs font-semibold text-slate-600 mb-1">UMBRAL ALERTA BAJO STOCK</label>
@@ -295,6 +317,11 @@
                 <i data-lucide="x" class="w-5 h-5"></i>
             </button>
 
+            <!-- Imagen Referencial en la Ficha Técnica -->
+            <div id="cardImageContainer" class="mb-4 hidden">
+                <img id="cardImage" src="" alt="Material" class="w-full h-48 object-cover rounded-xl border border-slate-200">
+            </div>
+
             <div class="text-center border-b pb-4 mb-4">
                 <span class="inline-block px-3 py-1 bg-indigo-50 text-indigo-600 text-xs font-bold rounded-full border border-indigo-100 uppercase tracking-wide mb-1" id="cardCode"></span>
                 <h3 class="text-xl font-bold text-slate-800" id="cardName"></h3>
@@ -304,7 +331,7 @@
             <div class="space-y-3 mb-6">
                 <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 flex justify-between items-center">
                     <div>
-                        <p class="text-xs text-slate-500 font-medium uppercase">Stock Actual Disponble</p>
+                        <p class="text-xs text-slate-500 font-medium uppercase">Stock Actual Disponible</p>
                         <p class="text-3xl font-black" id="cardCurrentStock"></p>
                     </div>
                     <div id="cardStockBadge"></div>
@@ -331,7 +358,7 @@
         </div>
     </div>
 
-    <!-- Modales estándar (Login, Formulario Material, Movimientos, QR Viewer, Escáner) -->
+    <!-- Modales estándar -->
     <div id="loginModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
         <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-100">
             <div class="text-center mb-6">
@@ -367,6 +394,7 @@
         </div>
     </div>
 
+    <!-- Modal Nuevo / Editar Material (Con Imagen Referencial) -->
     <div id="materialModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
         <div class="bg-white rounded-xl max-w-md w-full p-6 shadow-2xl">
             <div class="flex justify-between items-center mb-4 border-b pb-3">
@@ -389,6 +417,11 @@
                 <div>
                     <label class="block text-xs font-semibold text-slate-600 mb-1">NOMBRE DEL MATERIAL</label>
                     <input type="text" id="matName" required placeholder="Ej: Casco de Seguridad Rojo" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">URL IMAGEN REFERENCIAL (OPCIONAL)</label>
+                    <input type="url" id="matImageUrl" placeholder="https://ejemplo.com/foto.jpg" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-xs">
                 </div>
                 
                 <div class="grid grid-cols-2 gap-4">
@@ -499,7 +532,7 @@
         </div>
     </div>
 
-    <!-- Script Principal con Detección de Ficha QR en URL -->
+    <!-- Script Principal -->
     <script>
         const SUPABASE_URL = 'https://irujdgjsukvjvtmqwzsp.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_7snv9p_87FKrxWQykSBWFg_GQyF3NKS';
@@ -517,7 +550,9 @@
             location: 'Cargando...',
             lowStockThreshold: 5,
             prefix: 'MAT',
-            categories: ['EPP', 'Herramientas', 'Fontanería']
+            categories: ['EPP', 'Herramientas', 'Fontanería'],
+            companyLogo: '',
+            projectImage: ''
         };
         let materials = [];
         let logs = [];
@@ -533,7 +568,9 @@
                         location: cfgData.location,
                         lowStockThreshold: cfgData.low_stock_threshold,
                         prefix: cfgData.prefix,
-                        categories: cfgData.categories || []
+                        categories: cfgData.categories || [],
+                        companyLogo: cfgData.company_logo || '',
+                        projectImage: cfgData.project_image || ''
                     };
                 }
 
@@ -547,7 +584,8 @@
                         unit: m.unit,
                         initialStock: Number(m.initial_stock),
                         currentStock: Number(m.current_stock),
-                        location: m.location
+                        location: m.location,
+                        imageUrl: m.image_url || ''
                     }));
                 }
 
@@ -567,13 +605,12 @@
                 }
 
                 refreshUI();
-                checkURLParamForMaterialCard(); // Verificar si viene de un escaneo de cámara móvil
+                checkURLParamForMaterialCard();
             } catch (err) {
                 console.error("Error al sincronizar con Supabase:", err);
             }
         }
 
-        // DETECTAR PARÁMETRO ?code= EN LA URL PARA MOSTRAR FICHA
         function checkURLParamForMaterialCard() {
             const urlParams = new URLSearchParams(window.location.search);
             const codeParam = urlParams.get('code');
@@ -582,8 +619,6 @@
                 const mat = materials.find(m => m.code.toUpperCase() === codeParam.trim().toUpperCase());
                 if (mat) {
                     openMaterialCardModal(mat);
-                } else {
-                    alert(`No se encontró ningún material en la nube con el código: "${codeParam}"`);
                 }
             }
         }
@@ -595,6 +630,15 @@
             document.getElementById('cardCurrentStock').innerText = `${mat.currentStock} ${mat.unit || 'und'}`;
             document.getElementById('cardInitialStock').innerText = `${mat.initialStock} ${mat.unit || 'und'}`;
             document.getElementById('cardLocation').innerText = mat.location || 'N/A';
+
+            const cardImgContainer = document.getElementById('cardImageContainer');
+            const cardImg = document.getElementById('cardImage');
+            if (mat.imageUrl) {
+                cardImg.src = mat.imageUrl;
+                cardImgContainer.classList.remove('hidden');
+            } else {
+                cardImgContainer.classList.add('hidden');
+            }
 
             const isLowStock = mat.currentStock < config.lowStockThreshold;
             document.getElementById('cardCurrentStock').className = `text-3xl font-black ${isLowStock ? 'text-amber-600' : 'text-slate-800'}`;
@@ -629,7 +673,6 @@
             const qrcodeContainer = document.getElementById('qrcode');
             qrcodeContainer.innerHTML = '';
 
-            // GENERAR URL COMPLETA EN EL CÓDIGO QR PARA DETECCIÓN POR CÁMARA MÓVIL
             const currentBaseURL = window.location.origin + window.location.pathname;
             const fullQRURL = `${currentBaseURL}?code=${encodeURIComponent(code)}`;
 
@@ -671,7 +714,8 @@
                     'CATEGORIA': 'EPP',
                     'UNIDAD': 'und',
                     'STOCK_INICIAL': 20,
-                    'UBICACION': 'Estante A-1'
+                    'UBICACION': 'Estante A-1',
+                    'URL_IMAGEN': 'https://ejemplo.com/foto.jpg'
                 }
             ];
 
@@ -682,10 +726,7 @@
         }
 
         function triggerFileInput() {
-            if (currentUser.role !== 'ADMIN') {
-                alert('Solo los administradores pueden importar datos desde Excel.');
-                return;
-            }
+            if (currentUser.role !== 'ADMIN') return;
             document.getElementById('excelFileInput').click();
         }
 
@@ -701,10 +742,7 @@
                     const worksheet = workbook.Sheets[workbook.SheetNames[0]];
                     const rows = XLSX.utils.sheet_to_json(worksheet);
 
-                    if (rows.length === 0) {
-                        alert('El archivo Excel está vacío.');
-                        return;
-                    }
+                    if (rows.length === 0) return;
 
                     let insertedCount = 0, updatedCount = 0;
 
@@ -713,8 +751,9 @@
                         const name = (row['MATERIAL'] || row['Material'] || row['Nombre'] || row['name'] || '').toString().trim();
                         const category = (row['CATEGORIA'] || row['Categoría'] || row['CATEGORÍA'] || row['category'] || 'General').toString().trim();
                         const unit = (row['UNIDAD'] || row['Unidad'] || row['unit'] || 'und').toString().trim();
-                        const initialStock = parseFloat(row['STOCK_INICIAL'] || row['Stock Inicial'] || row['Stock'] || row['STOCK'] || 0) || 0;
-                        const location = (row['UBICACION'] || row['Ubicación'] || row['UBICACIÓN'] || row['location'] || '').toString().trim();
+                        const initialStock = parseFloat(row['STOCK_INICIAL'] || row['Stock Inicial'] || 0) || 0;
+                        const location = (row['UBICACION'] || row['Ubicación'] || '').toString().trim();
+                        const imageUrl = (row['URL_IMAGEN'] || row['Imagen'] || '').toString().trim();
 
                         if (!code || !name) continue;
 
@@ -730,7 +769,8 @@
                             unit: unit,
                             initial_stock: existing ? existing.initialStock : initialStock,
                             current_stock: currentStock,
-                            location: location
+                            location: location,
+                            image_url: imageUrl
                         });
 
                         if (!error) {
@@ -739,12 +779,12 @@
                         }
                     }
 
-                    alert(`¡Importación completada con éxito!\n\nMateriales nuevos guardados: ${insertedCount}\nMateriales actualizados: ${updatedCount}`);
+                    alert(`Importación completada:\nNuevos: ${insertedCount}\nActualizados: ${updatedCount}`);
                     document.getElementById('excelFileInput').value = '';
                     fetchAllDataFromSupabase();
 
                 } catch (err) {
-                    alert('Error al procesar el archivo Excel. Verifique el formato e intente nuevamente.');
+                    alert('Error al procesar el archivo Excel.');
                 }
             };
             reader.readAsArrayBuffer(file);
@@ -770,10 +810,7 @@
                        (m.location || '').toLowerCase().includes(fLocation);
             });
 
-            if (filtered.length === 0) {
-                alert('No hay datos para exportar con los filtros actuales.');
-                return;
-            }
+            if (filtered.length === 0) return;
 
             const excelData = filtered.map(m => ({
                 'CÓDIGO / SKU': m.code,
@@ -783,6 +820,7 @@
                 'STOCK INICIAL': m.initialStock,
                 'STOCK ACTUAL': m.currentStock,
                 'UBICACIÓN': m.location || 'N/A',
+                'URL IMAGEN': m.imageUrl || '',
                 'ESTADO ALERTA': m.currentStock < config.lowStockThreshold ? 'BAJO STOCK' : 'OK'
             }));
 
@@ -809,10 +847,7 @@
                        (log.notes || '').toLowerCase().includes(fNotes);
             });
 
-            if (filtered.length === 0) {
-                alert('No hay movimientos registrados para exportar.');
-                return;
-            }
+            if (filtered.length === 0) return;
 
             const excelData = filtered.map(log => ({
                 'FECHA Y HORA': log.date,
@@ -850,7 +885,6 @@
                 localStorage.setItem('almacen_session', JSON.stringify(currentUser));
                 closeModal('loginModal');
                 refreshUI();
-                alert(`¡Bienvenido ${currentUser.name}!`);
             } else {
                 const err = document.getElementById('loginError');
                 err.innerText = 'Usuario o contraseña incorrectos.';
@@ -881,6 +915,24 @@
             document.getElementById('cfgLocation').value = config.location;
             document.getElementById('cfgLowStockThreshold').value = config.lowStockThreshold;
             document.getElementById('cfgPrefix').value = config.prefix;
+            document.getElementById('cfgCompanyLogo').value = config.companyLogo || '';
+            document.getElementById('cfgProjectImage').value = config.projectImage || '';
+
+            // Renderizar Logo e Imagen de Proyecto en Header
+            const logoContainer = document.getElementById('companyLogoContainer');
+            if (config.companyLogo) {
+                logoContainer.innerHTML = `<img src="${config.companyLogo}" alt="Logo" class="w-full h-full object-cover">`;
+            } else {
+                logoContainer.innerHTML = `<i data-lucide="boxes" class="w-6 h-6 text-indigo-400"></i>`;
+            }
+
+            const projImgHeader = document.getElementById('projectImageHeader');
+            if (config.projectImage) {
+                projImgHeader.src = config.projectImage;
+                projImgHeader.classList.remove('hidden');
+            } else {
+                projImgHeader.classList.add('hidden');
+            }
 
             const masterList = document.getElementById('masterCategoriesList');
             masterList.innerHTML = '';
@@ -896,6 +948,7 @@
 
             const datalist = document.getElementById('categoriesDatalist');
             datalist.innerHTML = config.categories.map(c => `<option value="${c}">`).join('');
+            lucide.createIcons();
         }
 
         async function saveConfig(e) {
@@ -906,6 +959,8 @@
             const newLoc = document.getElementById('cfgLocation').value.trim();
             const newLow = parseInt(document.getElementById('cfgLowStockThreshold').value) || 5;
             const newPrefix = document.getElementById('cfgPrefix').value.trim().toUpperCase();
+            const newLogo = document.getElementById('cfgCompanyLogo').value.trim();
+            const newProjImg = document.getElementById('cfgProjectImage').value.trim();
 
             const { error } = await db.from('project_config').upsert({
                 id: 'current_config',
@@ -913,7 +968,9 @@
                 location: newLoc,
                 low_stock_threshold: newLow,
                 prefix: newPrefix,
-                categories: config.categories
+                categories: config.categories,
+                company_logo: newLogo,
+                project_image: newProjImg
             });
 
             if (!error) {
@@ -1089,7 +1146,7 @@
             tbody.innerHTML = '';
 
             if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="9" class="text-center py-8 text-slate-400">No se encontraron materiales</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="10" class="text-center py-8 text-slate-400">No se encontraron materiales</td></tr>`;
                 lucide.createIcons();
                 return;
             }
@@ -1100,7 +1157,12 @@
                 const unitStr = mat.unit || 'und';
                 const isLowStock = mat.currentStock < config.lowStockThreshold;
 
+                const imgHtml = mat.imageUrl 
+                    ? `<img src="${mat.imageUrl}" alt="Material" class="w-10 h-10 object-cover rounded-lg border mx-auto">`
+                    : `<div class="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center mx-auto text-slate-400"><i data-lucide="image" class="w-5 h-5"></i></div>`;
+
                 tr.innerHTML = `
+                    <td class="py-2 px-3 text-center">${imgHtml}</td>
                     <td class="py-3 px-3 font-mono font-bold text-indigo-600">${mat.code}</td>
                     <td class="py-3 px-3 font-medium">${mat.name}</td>
                     <td class="py-3 px-3"><span class="px-2 py-1 bg-slate-100 text-slate-600 text-xs rounded-full border">${mat.category || 'General'}</span></td>
@@ -1206,6 +1268,7 @@
             document.getElementById('matInitialStock').disabled = false;
             document.getElementById('matUnit').value = 'und';
             document.getElementById('matCode').value = `${config.prefix}-`;
+            document.getElementById('matImageUrl').value = '';
 
             toggleCustomUnitInput();
             document.getElementById('modalTitle').innerText = 'Agregar Material';
@@ -1225,6 +1288,7 @@
             document.getElementById('matInitialStock').value = mat.initialStock;
             document.getElementById('matInitialStock').disabled = true;
             document.getElementById('matLocation').value = mat.location || '';
+            document.getElementById('matImageUrl').value = mat.imageUrl || '';
 
             const standardUnits = ['und', 'm', 'kg', 'gal', 'caja', 'bolsa', 'rollos'];
             if (standardUnits.includes(mat.unit)) {
@@ -1250,6 +1314,7 @@
             const category = document.getElementById('matCategory').value.trim();
             const initialStock = parseFloat(document.getElementById('matInitialStock').value) || 0;
             const location = document.getElementById('matLocation').value.trim();
+            const imageUrl = document.getElementById('matImageUrl').value.trim();
 
             const unitSelect = document.getElementById('matUnit').value;
             const unit = unitSelect === 'custom' 
@@ -1267,7 +1332,8 @@
                 unit: unit,
                 initial_stock: initialStock,
                 current_stock: currentStock,
-                location: location
+                location: location,
+                image_url: imageUrl
             });
 
             if (!error) {
