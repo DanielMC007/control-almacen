@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Control de Almacén en la Nube (Supabase + Excel + Importación)</title>
+    <title>Control de Almacén en la Nube</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Supabase JS Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- SheetJS (xlsx) para Exportar e Importar Excel -->
+    <!-- SheetJS (xlsx) para Exportación e Importación -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <!-- QRCode.js para Generación -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <!-- Html5-QRCode para Escaneo -->
+    <!-- Html5-QRCode para Escaneo Integrado -->
     <script src="https://unpkg.com/html5-qrcode"></script>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -56,7 +56,7 @@
     </header>
 
     <main class="max-w-7xl mx-auto px-4 mt-6">
-        <!-- Indicadores de Carga / Nube -->
+        <!-- Indicador Nube -->
         <div id="cloudSyncBadge" class="mb-4 flex items-center gap-2 text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 p-2.5 rounded-lg">
             <i data-lucide="wifi" class="w-4 h-4 text-emerald-600 animate-pulse"></i>
             <span class="font-semibold">Conectado en tiempo real con Supabase Cloud.</span>
@@ -121,7 +121,6 @@
                 <div id="categoryTabsContainer" class="flex flex-wrap gap-2"></div>
             </div>
 
-            <!-- Barra de Acciones de Inventario (Filtros, Importar y Exportar) -->
             <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 mb-4 flex flex-wrap justify-between items-center gap-3">
                 <div class="flex items-center space-x-2 text-sm text-slate-600">
                     <i data-lucide="filter" class="w-4 h-4 text-indigo-600"></i>
@@ -131,9 +130,7 @@
                     </button>
                 </div>
 
-                <!-- Botones de Gestión Excel -->
                 <div class="flex items-center space-x-2">
-                    <!-- Input oculto para carga de archivos -->
                     <input type="file" id="excelFileInput" accept=".xlsx, .xls" class="hidden" onchange="processExcelImport(event)">
                     
                     <button id="btnDownloadTemplate" onclick="downloadExcelTemplate()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition">
@@ -153,7 +150,6 @@
                 </div>
             </div>
 
-            <!-- Tabla de Inventario -->
             <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
@@ -292,7 +288,50 @@
         </div>
     </main>
 
-    <!-- Modal: Autenticación / Cambio de Usuario -->
+    <!-- MODAL: FICHA TÉCNICA DEL MATERIAL (ESCANEO DE QR EXTERNO) -->
+    <div id="cardModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-md hidden items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100 relative">
+            <button onclick="closeModal('cardModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+
+            <div class="text-center border-b pb-4 mb-4">
+                <span class="inline-block px-3 py-1 bg-indigo-50 text-indigo-600 text-xs font-bold rounded-full border border-indigo-100 uppercase tracking-wide mb-1" id="cardCode"></span>
+                <h3 class="text-xl font-bold text-slate-800" id="cardName"></h3>
+                <p class="text-xs text-slate-400" id="cardCategory"></p>
+            </div>
+
+            <div class="space-y-3 mb-6">
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 flex justify-between items-center">
+                    <div>
+                        <p class="text-xs text-slate-500 font-medium uppercase">Stock Actual Disponble</p>
+                        <p class="text-3xl font-black" id="cardCurrentStock"></p>
+                    </div>
+                    <div id="cardStockBadge"></div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 text-xs">
+                    <div class="p-3 bg-slate-50 rounded-lg border">
+                        <p class="text-slate-400 font-medium">Stock Inicial</p>
+                        <p class="text-sm font-bold text-slate-700" id="cardInitialStock"></p>
+                    </div>
+                    <div class="p-3 bg-slate-50 rounded-lg border">
+                        <p class="text-slate-400 font-medium">Ubicación en Almacén</p>
+                        <p class="text-sm font-bold text-slate-700" id="cardLocation"></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-between items-center gap-2 pt-2 border-t">
+                <button onclick="closeModal('cardModal')" class="w-full py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold rounded-xl text-xs">
+                    Ir al Sistema Principal
+                </button>
+                <div id="cardAdminActions" class="w-full flex gap-2"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modales estándar (Login, Formulario Material, Movimientos, QR Viewer, Escáner) -->
     <div id="loginModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
         <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-100">
             <div class="text-center mb-6">
@@ -328,7 +367,6 @@
         </div>
     </div>
 
-    <!-- Modal: Nuevo / Editar Material -->
     <div id="materialModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
         <div class="bg-white rounded-xl max-w-md w-full p-6 shadow-2xl">
             <div class="flex justify-between items-center mb-4 border-b pb-3">
@@ -393,7 +431,6 @@
         </div>
     </div>
 
-    <!-- Modal: Registrar Salida Parcial / Devolución -->
     <div id="movementModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
         <div class="bg-white rounded-xl max-w-md w-full p-6 shadow-2xl">
             <div class="flex justify-between items-center mb-4 border-b pb-3">
@@ -433,7 +470,6 @@
         </div>
     </div>
 
-    <!-- Modal: Ver Código QR -->
     <div id="qrModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
         <div class="bg-white rounded-xl max-w-sm w-full p-6 text-center shadow-2xl">
             <h3 id="qrModalTitle" class="text-lg font-bold text-slate-800 mb-1">Código QR</h3>
@@ -448,7 +484,6 @@
         </div>
     </div>
 
-    <!-- Modal: Escáner QR -->
     <div id="scannerModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
         <div class="bg-white rounded-xl max-w-md w-full p-6 shadow-2xl">
             <div class="flex justify-between items-center mb-4">
@@ -464,9 +499,8 @@
         </div>
     </div>
 
-    <!-- Script Principal con Integración Supabase e Importación Excel -->
+    <!-- Script Principal con Detección de Ficha QR en URL -->
     <script>
-        // CREDENCIALES CONFIGURADAS DE SUPABASE
         const SUPABASE_URL = 'https://irujdgjsukvjvtmqwzsp.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_7snv9p_87FKrxWQykSBWFg_GQyF3NKS';
 
@@ -533,9 +567,83 @@
                 }
 
                 refreshUI();
+                checkURLParamForMaterialCard(); // Verificar si viene de un escaneo de cámara móvil
             } catch (err) {
                 console.error("Error al sincronizar con Supabase:", err);
             }
+        }
+
+        // DETECTAR PARÁMETRO ?code= EN LA URL PARA MOSTRAR FICHA
+        function checkURLParamForMaterialCard() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const codeParam = urlParams.get('code');
+
+            if (codeParam) {
+                const mat = materials.find(m => m.code.toUpperCase() === codeParam.trim().toUpperCase());
+                if (mat) {
+                    openMaterialCardModal(mat);
+                } else {
+                    alert(`No se encontró ningún material en la nube con el código: "${codeParam}"`);
+                }
+            }
+        }
+
+        function openMaterialCardModal(mat) {
+            document.getElementById('cardCode').innerText = mat.code;
+            document.getElementById('cardName').innerText = mat.name;
+            document.getElementById('cardCategory').innerText = mat.category || 'General';
+            document.getElementById('cardCurrentStock').innerText = `${mat.currentStock} ${mat.unit || 'und'}`;
+            document.getElementById('cardInitialStock').innerText = `${mat.initialStock} ${mat.unit || 'und'}`;
+            document.getElementById('cardLocation').innerText = mat.location || 'N/A';
+
+            const isLowStock = mat.currentStock < config.lowStockThreshold;
+            document.getElementById('cardCurrentStock').className = `text-3xl font-black ${isLowStock ? 'text-amber-600' : 'text-slate-800'}`;
+            
+            document.getElementById('cardStockBadge').innerHTML = isLowStock
+                ? `<span class="px-2.5 py-1 bg-amber-100 text-amber-700 text-xs font-bold rounded-lg flex items-center gap-1"><i data-lucide="alert-triangle" class="w-3.5 h-3.5"></i> BAJO STOCK</span>`
+                : `<span class="px-2.5 py-1 bg-emerald-100 text-emerald-700 text-xs font-bold rounded-lg flex items-center gap-1"><i data-lucide="check-circle" class="w-3.5 h-3.5"></i> DISPONIBLE</span>`;
+
+            const adminActions = document.getElementById('cardAdminActions');
+            if (currentUser.role === 'ADMIN') {
+                adminActions.innerHTML = `
+                    <button onclick="closeModal('cardModal'); openMovementModal('${mat.id}', 'SALIDA')" class="w-full py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-semibold rounded-xl text-xs flex items-center justify-center gap-1">
+                        <i data-lucide="arrow-up-right" class="w-4 h-4"></i> Salida
+                    </button>
+                    <button onclick="closeModal('cardModal'); openMovementModal('${mat.id}', 'DEVOLUCION')" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl text-xs flex items-center justify-center gap-1">
+                        <i data-lucide="arrow-down-left" class="w-4 h-4"></i> Devolución
+                    </button>
+                `;
+            } else {
+                adminActions.innerHTML = '';
+            }
+
+            document.getElementById('cardModal').classList.remove('hidden');
+            document.getElementById('cardModal').classList.add('flex');
+            lucide.createIcons();
+        }
+
+        function showQR(code, name) {
+            document.getElementById('qrModalTitle').innerText = code;
+            document.getElementById('qrModalSub').innerText = name;
+            
+            const qrcodeContainer = document.getElementById('qrcode');
+            qrcodeContainer.innerHTML = '';
+
+            // GENERAR URL COMPLETA EN EL CÓDIGO QR PARA DETECCIÓN POR CÁMARA MÓVIL
+            const currentBaseURL = window.location.origin + window.location.pathname;
+            const fullQRURL = `${currentBaseURL}?code=${encodeURIComponent(code)}`;
+
+            new QRCode(qrcodeContainer, {
+                text: fullQRURL,
+                width: 190,
+                height: 190,
+                colorDark : "#0f172a",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.H
+            });
+
+            document.getElementById('qrModal').classList.remove('hidden');
+            document.getElementById('qrModal').classList.add('flex');
         }
 
         function subscribeToRealtimeChanges() {
@@ -555,8 +663,6 @@
             applyPermissions();
         }
 
-        // --- FUNCIONES EXCEL (EXPORTAR, DESCARGAR PLANTILLA E IMPORTAR) ---
-        
         function downloadExcelTemplate() {
             const templateData = [
                 {
@@ -566,25 +672,12 @@
                     'UNIDAD': 'und',
                     'STOCK_INICIAL': 20,
                     'UBICACION': 'Estante A-1'
-                },
-                {
-                    'CODIGO': 'MAT-002',
-                    'MATERIAL': 'Tubería PVC 2"',
-                    'CATEGORIA': 'Fontanería',
-                    'UNIDAD': 'm',
-                    'STOCK_INICIAL': 50,
-                    'UBICACION': 'Rack 3'
                 }
             ];
 
             const worksheet = XLSX.utils.json_to_sheet(templateData);
             const workbook = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(workbook, worksheet, "PlantillaImportacion");
-
-            worksheet['!cols'] = [
-                { wch: 15 }, { wch: 30 }, { wch: 20 }, { wch: 10 }, { wch: 15 }, { wch: 20 }
-            ];
-
             XLSX.writeFile(workbook, "Plantilla_Importar_Materiales.xlsx");
         }
 
@@ -605,8 +698,7 @@
                 try {
                     const data = new Uint8Array(e.target.result);
                     const workbook = XLSX.read(data, { type: 'array' });
-                    const firstSheetName = workbook.SheetNames[0];
-                    const worksheet = workbook.Sheets[firstSheetName];
+                    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
                     const rows = XLSX.utils.sheet_to_json(worksheet);
 
                     if (rows.length === 0) {
@@ -614,11 +706,9 @@
                         return;
                     }
 
-                    let insertedCount = 0;
-                    let updatedCount = 0;
+                    let insertedCount = 0, updatedCount = 0;
 
                     for (const row of rows) {
-                        // Mapeo flexible de columnas (soporta variaciones de minúsculas/mayúsculas)
                         const code = (row['CODIGO'] || row['Código'] || row['CÓDIGO'] || row['code'] || '').toString().trim().toUpperCase();
                         const name = (row['MATERIAL'] || row['Material'] || row['Nombre'] || row['name'] || '').toString().trim();
                         const category = (row['CATEGORIA'] || row['Categoría'] || row['CATEGORÍA'] || row['category'] || 'General').toString().trim();
@@ -626,9 +716,8 @@
                         const initialStock = parseFloat(row['STOCK_INICIAL'] || row['Stock Inicial'] || row['Stock'] || row['STOCK'] || 0) || 0;
                         const location = (row['UBICACION'] || row['Ubicación'] || row['UBICACIÓN'] || row['location'] || '').toString().trim();
 
-                        if (!code || !name) continue; // Saltar filas sin datos básicos
+                        if (!code || !name) continue;
 
-                        // Buscar si el material ya existe en la base de datos local por código
                         const existing = materials.find(m => m.code.toUpperCase() === code);
                         const id = existing ? existing.id : Date.now().toString() + Math.floor(Math.random() * 1000);
                         const currentStock = existing ? existing.currentStock : initialStock;
@@ -656,7 +745,6 @@
 
                 } catch (err) {
                     alert('Error al procesar el archivo Excel. Verifique el formato e intente nuevamente.');
-                    console.error(err);
                 }
             };
             reader.readAsArrayBuffer(file);
@@ -701,14 +789,7 @@
             const worksheet = XLSX.utils.json_to_sheet(excelData);
             const workbook = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(workbook, worksheet, "Inventario");
-
-            worksheet['!cols'] = [
-                { wch: 15 }, { wch: 30 }, { wch: 18 }, { wch: 10 },
-                { wch: 14 }, { wch: 14 }, { wch: 20 }, { wch: 14 }
-            ];
-
-            const fileName = `Inventario_${config.projectName.replace(/\s+/g, '_')}_${new Date().toISOString().slice(0,10)}.xlsx`;
-            XLSX.writeFile(workbook, fileName);
+            XLSX.writeFile(workbook, `Inventario_${config.projectName.replace(/\s+/g, '_')}_${new Date().toISOString().slice(0,10)}.xlsx`);
         }
 
         function exportHistoryToExcel() {
@@ -747,14 +828,7 @@
             const worksheet = XLSX.utils.json_to_sheet(excelData);
             const workbook = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(workbook, worksheet, "Movimientos");
-
-            worksheet['!cols'] = [
-                { wch: 20 }, { wch: 15 }, { wch: 15 }, { wch: 30 },
-                { wch: 12 }, { wch: 10 }, { wch: 30 }, { wch: 35 }
-            ];
-
-            const fileName = `Historial_Movimientos_${new Date().toISOString().slice(0,10)}.xlsx`;
-            XLSX.writeFile(workbook, fileName);
+            XLSX.writeFile(workbook, `Historial_Movimientos_${new Date().toISOString().slice(0,10)}.xlsx`);
         }
 
         function openLoginModal() {
@@ -857,7 +931,6 @@
             if (val && !config.categories.includes(val)) {
                 config.categories.push(val);
                 input.value = '';
-                
                 await db.from('project_config').upsert({
                     id: 'current_config',
                     categories: config.categories
@@ -1299,26 +1372,6 @@
             document.getElementById(id).classList.remove('flex');
         }
 
-        function showQR(code, name) {
-            document.getElementById('qrModalTitle').innerText = code;
-            document.getElementById('qrModalSub').innerText = name;
-            
-            const qrcodeContainer = document.getElementById('qrcode');
-            qrcodeContainer.innerHTML = '';
-
-            new QRCode(qrcodeContainer, {
-                text: code,
-                width: 180,
-                height: 180,
-                colorDark : "#0f172a",
-                colorLight : "#ffffff",
-                correctLevel : QRCode.CorrectLevel.H
-            });
-
-            document.getElementById('qrModal').classList.remove('hidden');
-            document.getElementById('qrModal').classList.add('flex');
-        }
-
         function printQR() {
             const qrContent = document.getElementById('qrcode').innerHTML;
             const title = document.getElementById('qrModalTitle').innerText;
@@ -1372,19 +1425,20 @@
             document.getElementById('scanResult').classList.remove('hidden');
             document.getElementById('scannedCodeText').innerText = decodedText;
 
-            const mat = materials.find(m => m.code.toUpperCase() === decodedText.trim().toUpperCase());
-
-            if (mat) {
-                switchTab('inventory');
-                clearInventoryFilters();
-                document.getElementById('filterInvCode').value = decodedText;
-                renderTable();
-                alert(`¡Material Encontrado!\n\nCódigo: ${mat.code}\nNombre: ${mat.name}\nUnidad: ${mat.unit || 'und'}\nStock Inicial: ${mat.initialStock}\nStock Actual: ${mat.currentStock}\nUbicación: ${mat.location}`);
-            } else {
-                alert(`Código escaneado: "${decodedText}"\n\nNo se encontró ningún material registrado con este código.`);
+            let searchCode = decodedText.trim();
+            if (decodedText.includes('?code=')) {
+                const urlParams = new URLSearchParams(decodedText.split('?')[1]);
+                searchCode = urlParams.get('code') || decodedText;
             }
 
-            closeScannerModal();
+            const mat = materials.find(m => m.code.toUpperCase() === searchCode.toUpperCase());
+
+            if (mat) {
+                closeScannerModal();
+                openMaterialCardModal(mat);
+            } else {
+                alert(`Código escaneado: "${searchCode}"\n\nNo se encontró ningún material registrado en el inventario.`);
+            }
         }
 
         function onScanError(errorMessage) {}
