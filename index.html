@@ -16,6 +16,29 @@
     <script src="https://unpkg.com/html5-qrcode"></script>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* CSS para ajuste de texto en una sola fila y redimensionamiento manual de columnas */
+        th, td {
+            white-space: nowrap !important;
+        }
+        .resizable-th {
+            position: relative;
+        }
+        .resizer {
+            position: absolute;
+            right: 0;
+            top: 0;
+            height: 100%;
+            width: 5px;
+            background: rgba(203, 213, 225, 0.5);
+            cursor: col-resize;
+            user-select: none;
+        }
+        .resizer:hover, .resizing {
+            background: #6366f1;
+            width: 7px;
+        }
+    </style>
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans min-h-screen pb-12 antialiased selection:bg-indigo-500 selection:text-white">
 
@@ -164,24 +187,25 @@
                 </div>
             </div>
 
+            <!-- Tabla de Inventario con Columnas Redimensionables Manualmente y Texto en 1 Fila -->
             <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
                 <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
+                    <table id="mainInventoryTable" class="w-full text-left border-collapse">
                         <thead>
                             <tr class="bg-slate-100 border-b border-slate-200 text-slate-700 text-xs uppercase tracking-wider font-semibold">
-                                <th class="py-3 px-3 text-center">Foto</th>
-                                <th class="py-3 px-3">Estado</th>
-                                <th class="py-3 px-3">Código</th>
-                                <th class="py-3 px-3">Material</th>
-                                <th class="py-3 px-3">Categoría</th>
-                                <th class="py-3 px-3 text-center">Unidad</th>
-                                <th class="py-3 px-3 text-center">Stock Inicial</th>
-                                <th class="py-3 px-3 text-center">Stock Actual</th>
-                                <th class="py-3 px-3">Fecha Ingreso</th>
-                                <th class="py-3 px-3">Vencimiento</th>
-                                <th class="py-3 px-3">Ubicación</th>
-                                <th class="py-3 px-3 text-center">Gestión Stock</th>
-                                <th class="py-3 px-3 text-center">Acciones</th>
+                                <th class="py-3 px-3 text-center resizable-th">Foto<div class="resizer"></div></th>
+                                <th class="py-3 px-3 resizable-th">Estado<div class="resizer"></div></th>
+                                <th class="py-3 px-3 resizable-th">Código / SKU<div class="resizer"></div></th>
+                                <th class="py-3 px-3 resizable-th">Material<div class="resizer"></div></th>
+                                <th class="py-3 px-3 resizable-th">Categoría<div class="resizer"></div></th>
+                                <th class="py-3 px-3 text-center resizable-th">Unidad / Abr.<div class="resizer"></div></th>
+                                <th class="py-3 px-3 text-center resizable-th">Stock Inicial<div class="resizer"></div></th>
+                                <th class="py-3 px-3 text-center resizable-th">Stock Actual<div class="resizer"></div></th>
+                                <th class="py-3 px-3 resizable-th">Fecha Ingreso<div class="resizer"></div></th>
+                                <th class="py-3 px-3 resizable-th">Vencimiento<div class="resizer"></div></th>
+                                <th class="py-3 px-3 resizable-th">Ubicación<div class="resizer"></div></th>
+                                <th class="py-3 px-3 text-center resizable-th">Gestión Stock<div class="resizer"></div></th>
+                                <th class="py-3 px-3 text-center resizable-th">Acciones<div class="resizer"></div></th>
                             </tr>
                             <tr class="bg-slate-50 border-b border-slate-200 text-xs">
                                 <th class="p-2 bg-slate-100"></th>
@@ -330,15 +354,16 @@
         </div>
     </main>
 
-    <!-- MODAL: FICHA TÉCNICA DEL MATERIAL -->
+    <!-- MODAL: FICHA TÉCNICA DEL MATERIAL (FOTO DEL MATERIAL AL ESCANEAR) -->
     <div id="cardModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-md hidden items-center justify-center p-3 sm:p-4 z-50">
         <div class="bg-white rounded-2xl max-w-md w-full p-5 sm:p-6 shadow-2xl border border-slate-100 relative max-h-[90vh] overflow-y-auto">
             <button onclick="closeModal('cardModal')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
                 <i data-lucide="x" class="w-5 h-5"></i>
             </button>
 
+            <!-- Foto del Material en la Ficha Técnica Móvil -->
             <div id="cardImageContainer" class="mb-4 hidden">
-                <img id="cardImage" src="" alt="Material" class="w-full h-40 sm:h-48 object-cover rounded-xl border border-slate-200">
+                <img id="cardImage" src="" alt="Foto del Material" class="w-full h-44 sm:h-52 object-cover rounded-xl border border-slate-200 shadow-sm">
             </div>
 
             <div class="text-center border-b pb-4 mb-4">
@@ -424,7 +449,7 @@
         </div>
     </div>
 
-    <!-- Modal Nuevo / Editar Material -->
+    <!-- Modal Nuevo / Editar Material (Multiples Abreviaturas) -->
     <div id="materialModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center p-3 sm:p-4 z-50">
         <div class="bg-white rounded-xl max-w-md w-full p-5 sm:p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-4 border-b pb-3">
@@ -479,22 +504,31 @@
                 
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">UNIDAD (*)</label>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">UNIDAD / ABREVIATURA (*)</label>
                         <select id="matUnit" onchange="toggleCustomUnitInput()" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white text-sm">
                             <option value="">Seleccionar...</option>
                             <option value="und">Unidades (und)</option>
+                            <option value="pza">Piezas (pza)</option>
                             <option value="m">Metros (m)</option>
+                            <option value="m²">Metros Cuadrados (m²)</option>
+                            <option value="m³">Metros Cúbicos (m³)</option>
                             <option value="kg">Kilogramos (kg)</option>
-                            <option value="gal">Galones (gal)</option>
-                            <option value="caja">Cajas</option>
-                            <option value="bolsa">Bolsas</option>
-                            <option value="rollos">Rollos</option>
-                            <option value="custom">+ Otra unidad...</option>
+                            <option value="tn">Toneladas (tn)</option>
+                            <option value="gl">Galones (gl)</option>
+                            <option value="lt">Litros (lt)</option>
+                            <option value="cja">Cajas (cja)</option>
+                            <option value="bls">Bolsas (bls)</option>
+                            <option value="rll">Rollos (rll)</option>
+                            <option value="pln">Planchas (pln)</option>
+                            <option value="tb">Tubos (tb)</option>
+                            <option value="jgo">Juegos (jgo)</option>
+                            <option value="par">Pares (par)</option>
+                            <option value="custom">+ Otra abreviatura...</option>
                         </select>
                     </div>
                     <div id="customUnitContainer" class="hidden">
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">OTRA UNIDAD</label>
-                        <input type="text" id="matUnitCustom" placeholder="Ej: Paquete" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm">
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">OTRA ABREVIATURA</label>
+                        <input type="text" id="matUnitCustom" placeholder="Ej: pqt" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm">
                     </div>
                 </div>
 
@@ -801,6 +835,7 @@
             renderHistory();
             updateStats();
             applyPermissions();
+            initTableResizableColumns();
         }
 
         function downloadExcelTemplate() {
@@ -894,6 +929,7 @@
             reader.readAsArrayBuffer(file);
         }
 
+        // EXPORTACIÓN A EXCEL CON ESTILOS Y LOGOS DIBUJADOS REALES
         function exportInventoryToExcel() {
             const fCode = document.getElementById('filterInvCode').value.toLowerCase();
             const fName = document.getElementById('filterInvName').value.toLowerCase();
@@ -918,42 +954,112 @@
                        (m.location || '').toLowerCase().includes(fLocation);
             });
 
-            if (filtered.length === 0) return;
+            if (filtered.length === 0) {
+                alert("No hay materiales para exportar con los filtros actuales.");
+                return;
+            }
 
-            const headerRows = [
-                ['[LOGO EMPRESA]', '', '', 'REPORTE MAESTRO DE INVENTARIO - ALMACÉN', '', '', '', '', '', '[FOTO PROYECTO]'],
-                ['Proyecto:', config.projectName, '', '', '', '', '', 'Ubicación:', config.location],
-                ['Fecha Reporte:', new Date().toLocaleString(), '', '', '', '', '', 'Prefijo SKU:', config.prefix],
-                []
-            ];
+            const companyLogoImg = config.companyLogo 
+                ? `<img src="${config.companyLogo}" width="80" height="80" style="display:block; margin:auto;" />` 
+                : '<b style="color:#64748b;">[SIN LOGO]</b>';
 
-            const tableHeaders = ['ESTADO', 'CÓDIGO / SKU', 'MATERIAL', 'CATEGORÍA', 'UNIDAD', 'STOCK INICIAL', 'STOCK ACTUAL', 'FECHA INGRESO', 'VENCIMIENTO', 'UBICACIÓN', 'ESTADO ALERTA'];
+            const projectImg = config.projectImage 
+                ? `<img src="${config.projectImage}" width="80" height="80" style="display:block; margin:auto;" />` 
+                : '<b style="color:#64748b;">[SIN FOTO]</b>';
 
-            const dataRows = filtered.map(m => [
-                m.status || 'PUBLICADO',
-                m.code,
-                m.name,
-                m.category || 'General',
-                m.unit || 'und',
-                m.initialStock,
-                m.currentStock,
-                m.entryDate || 'N/A',
-                m.expirationDate || 'N/A',
-                m.location || 'N/A',
-                m.currentStock < config.lowStockThreshold ? 'BAJO STOCK' : 'OK'
-            ]);
+            let rowsHtml = '';
+            filtered.forEach(m => {
+                const isLow = m.currentStock < config.lowStockThreshold;
+                const alertBg = isLow ? '#fef3c7' : '#d1fae5';
+                const alertColor = isLow ? '#b45309' : '#047857';
+                const isDraft = m.status === 'BORRADOR';
+                const statusBg = isDraft ? '#f1f5f9' : '#ecfdf5';
+                const statusColor = isDraft ? '#475569' : '#047857';
 
-            const fullSheetData = [...headerRows, tableHeaders, ...dataRows];
-            const worksheet = XLSX.utils.aoa_to_sheet(fullSheetData);
+                rowsHtml += `
+                    <tr style="height:25px; text-align:center; font-size:11px;">
+                        <td style="border:1px solid #cbd5e1; background-color:${statusBg}; color:${statusColor}; font-weight:bold;">${m.status || 'PUBLICADO'}</td>
+                        <td style="border:1px solid #cbd5e1; font-family:monospace; font-weight:bold; color:#4338ca;">${m.code}</td>
+                        <td style="border:1px solid #cbd5e1; text-align:left; padding-left:8px; font-weight:600;">${m.name}</td>
+                        <td style="border:1px solid #cbd5e1; text-align:left; padding-left:8px;">${m.category || 'General'}</td>
+                        <td style="border:1px solid #cbd5e1;">${m.unit || 'und'}</td>
+                        <td style="border:1px solid #cbd5e1; font-weight:bold; color:#64748b;">${m.initialStock}</td>
+                        <td style="border:1px solid #cbd5e1; font-weight:bold; font-size:12px;">${m.currentStock}</td>
+                        <td style="border:1px solid #cbd5e1;">${m.entryDate || 'N/A'}</td>
+                        <td style="border:1px solid #cbd5e1;">${m.expirationDate || 'N/A'}</td>
+                        <td style="border:1px solid #cbd5e1; text-align:left; padding-left:8px;">${m.location || 'N/A'}</td>
+                        <td style="border:1px solid #cbd5e1; background-color:${alertBg}; color:${alertColor}; font-weight:bold;">${isLow ? 'BAJO STOCK' : 'OK'}</td>
+                    </tr>
+                `;
+            });
 
-            worksheet['!cols'] = [
-                { wch: 14 }, { wch: 16 }, { wch: 32 }, { wch: 20 },
-                { wch: 10 }, { wch: 15 }, { wch: 15 }, { wch: 16 }, { wch: 16 }, { wch: 22 }, { wch: 16 }
-            ];
+            const excelTemplate = `
+                <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+                <head>
+                    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+                    <!--[if gte mso 9]>
+                    <xml>
+                        <x:ExcelWorkbook>
+                            <x:ExcelWorksheets>
+                                <x:ExcelWorksheet>
+                                    <x:Name>Inventario</x:ExcelWorksheet>
+                                    <x:WorksheetOptions>
+                                        <x:DisplayGridlines/>
+                                    </x:WorksheetOptions>
+                                </x:ExcelWorksheet>
+                            </x:ExcelWorksheets>
+                        </x:ExcelWorkbook>
+                    </xml>
+                    <![endif]-->
+                    <style>
+                        body { font-family: Arial, sans-serif; }
+                        table { border-collapse: collapse; width: 100%; }
+                        .header-title { font-size: 16px; font-weight: bold; color: #0f172a; text-align: center; }
+                        .th-header { background-color: #0f172a; color: #ffffff; font-size: 11px; font-weight: bold; text-align: center; border: 1px solid #0f172a; height: 30px; }
+                    </style>
+                </head>
+                <body>
+                    <table>
+                        <tr style="height:90px;">
+                            <td colspan="2" style="text-align:center; vertical-align:middle; border:1px solid #e2e8f0;">${companyLogoImg}</td>
+                            <td colspan="7" class="header-title" style="vertical-align:middle; border:1px solid #e2e8f0;">
+                                REPORTE MAESTRO DE INVENTARIO DE ALMACÉN<br>
+                                <span style="font-size:12px; color:#475569; font-weight:normal;">Proyecto: <b>${config.projectName}</b> | Ubicación: <b>${config.location}</b></span><br>
+                                <span style="font-size:10px; color:#94a3b8; font-weight:normal;">Emisión: ${new Date().toLocaleString()} | SKU Prefijo: ${config.prefix}</span>
+                            </td>
+                            <td colspan="2" style="text-align:center; vertical-align:middle; border:1px solid #e2e8f0;">${projectImg}</td>
+                        </tr>
+                        <tr style="height:15px;"><td colspan="11"></td></tr>
+                        <thead>
+                            <tr>
+                                <th class="th-header" style="width:100px;">ESTADO</th>
+                                <th class="th-header" style="width:120px;">CÓDIGO / SKU</th>
+                                <th class="th-header" style="width:250px;">MATERIAL</th>
+                                <th class="th-header" style="width:140px;">CATEGORÍA</th>
+                                <th class="th-header" style="width:80px;">UNIDAD</th>
+                                <th class="th-header" style="width:100px;">STOCK INICIAL</th>
+                                <th class="th-header" style="width:100px;">STOCK ACTUAL</th>
+                                <th class="th-header" style="width:120px;">FECHA INGRESO</th>
+                                <th class="th-header" style="width:120px;">VENCIMIENTO</th>
+                                <th class="th-header" style="width:160px;">UBICACIÓN</th>
+                                <th class="th-header" style="width:120px;">ESTADO ALERTA</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${rowsHtml}
+                        </tbody>
+                    </table>
+                </body>
+                </html>
+            `;
 
-            const workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, "Inventario");
-            XLSX.writeFile(workbook, `Reporte_Inventario_${config.projectName.replace(/\s+/g, '_')}_${new Date().toISOString().slice(0,10)}.xlsx`);
+            const blob = new Blob([excelTemplate], { type: 'application/vnd.ms-excel;charset=utf-8' });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = `Reporte_Inventario_${config.projectName.replace(/\s+/g, '_')}_${new Date().toISOString().slice(0,10)}.xls`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
 
         function exportHistoryToExcel() {
@@ -973,39 +1079,141 @@
                        (log.notes || '').toLowerCase().includes(fNotes);
             });
 
-            if (filtered.length === 0) return;
+            if (filtered.length === 0) {
+                alert("No hay registros en el historial para exportar.");
+                return;
+            }
 
-            const headerRows = [
-                ['[LOGO EMPRESA]', '', 'HISTORIAL DE MOVIMIENTOS DE ALMACÉN', '', '', '[FOTO PROYECTO]'],
-                ['Proyecto:', config.projectName, '', '', 'Ubicación:', config.location],
-                ['Fecha Emisión:', new Date().toLocaleString(), '', '', 'Filtro Tipo:', fType || 'TODOS'],
-                []
-            ];
+            const companyLogoImg = config.companyLogo 
+                ? `<img src="${config.companyLogo}" width="80" height="80" style="display:block; margin:auto;" />` 
+                : '<b style="color:#64748b;">[SIN LOGO]</b>';
 
-            const tableHeaders = ['FECHA Y HORA', 'TIPO MOVIMIENTO', 'CÓDIGO', 'MATERIAL', 'CANTIDAD', 'UNIDAD', 'RESPONSABLE / ENTREGADO A', 'OBSERVACIONES'];
+            const projectImg = config.projectImage 
+                ? `<img src="${config.projectImage}" width="80" height="80" style="display:block; margin:auto;" />` 
+                : '<b style="color:#64748b;">[SIN FOTO]</b>';
 
-            const dataRows = filtered.map(log => [
-                log.date,
-                log.type,
-                log.code,
-                log.matName,
-                log.type === 'SALIDA' ? -log.quantity : log.quantity,
-                log.unit || 'und',
-                log.person,
-                log.notes || '-'
-            ]);
+            let rowsHtml = '';
+            filtered.forEach(log => {
+                const isSalida = log.type === 'SALIDA';
+                const typeBg = isSalida ? '#fef2f2' : '#ecfdf5';
+                const typeColor = isSalida ? '#dc2626' : '#047857';
 
-            const fullSheetData = [...headerRows, tableHeaders, ...dataRows];
-            const worksheet = XLSX.utils.aoa_to_sheet(fullSheetData);
+                rowsHtml += `
+                    <tr style="height:25px; text-align:center; font-size:11px;">
+                        <td style="border:1px solid #cbd5e1; color:#64748b;">${log.date}</td>
+                        <td style="border:1px solid #cbd5e1; background-color:${typeBg}; color:${typeColor}; font-weight:bold;">${log.type}</td>
+                        <td style="border:1px solid #cbd5e1; font-family:monospace; font-weight:bold; color:#4338ca;">${log.code}</td>
+                        <td style="border:1px solid #cbd5e1; text-align:left; padding-left:8px; font-weight:600;">${log.matName}</td>
+                        <td style="border:1px solid #cbd5e1; font-weight:bold;">${isSalida ? '-' : '+'}${log.quantity}</td>
+                        <td style="border:1px solid #cbd5e1;">${log.unit || 'und'}</td>
+                        <td style="border:1px solid #cbd5e1; text-align:left; padding-left:8px; font-weight:600;">${log.person}</td>
+                        <td style="border:1px solid #cbd5e1; text-align:left; padding-left:8px; color:#64748b;">${log.notes || '-'}</td>
+                    </tr>
+                `;
+            });
 
-            worksheet['!cols'] = [
-                { wch: 22 }, { wch: 16 }, { wch: 15 }, { wch: 32 },
-                { wch: 12 }, { wch: 10 }, { wch: 30 }, { wch: 35 }
-            ];
+            const excelTemplate = `
+                <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+                <head>
+                    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+                    <!--[if gte mso 9]>
+                    <xml>
+                        <x:ExcelWorkbook>
+                            <x:ExcelWorksheets>
+                                <x:ExcelWorksheet>
+                                    <x:Name>Movimientos</x:ExcelWorksheet>
+                                    <x:WorksheetOptions>
+                                        <x:DisplayGridlines/>
+                                    </x:WorksheetOptions>
+                                </x:ExcelWorksheet>
+                            </x:ExcelWorksheets>
+                        </x:ExcelWorkbook>
+                    </xml>
+                    <![endif]-->
+                    <style>
+                        body { font-family: Arial, sans-serif; }
+                        table { border-collapse: collapse; width: 100%; }
+                        .header-title { font-size: 16px; font-weight: bold; color: #0f172a; text-align: center; }
+                        .th-header { background-color: #0f172a; color: #ffffff; font-size: 11px; font-weight: bold; text-align: center; border: 1px solid #0f172a; height: 30px; }
+                    </style>
+                </head>
+                <body>
+                    <table>
+                        <tr style="height:90px;">
+                            <td colspan="2" style="text-align:center; vertical-align:middle; border:1px solid #e2e8f0;">${companyLogoImg}</td>
+                            <td colspan="4" class="header-title" style="vertical-align:middle; border:1px solid #e2e8f0;">
+                                HISTORIAL DE MOVIMIENTOS DE ALMACÉN<br>
+                                <span style="font-size:12px; color:#475569; font-weight:normal;">Proyecto: <b>${config.projectName}</b> | Ubicación: <b>${config.location}</b></span><br>
+                                <span style="font-size:10px; color:#94a3b8; font-weight:normal;">Filtro Aplicado: ${fType || 'TODOS'} | Emisión: ${new Date().toLocaleString()}</span>
+                            </td>
+                            <td colspan="2" style="text-align:center; vertical-align:middle; border:1px solid #e2e8f0;">${projectImg}</td>
+                        </tr>
+                        <tr style="height:15px;"><td colspan="8"></td></tr>
+                        <thead>
+                            <tr>
+                                <th class="th-header" style="width:160px;">FECHA Y HORA</th>
+                                <th class="th-header" style="width:120px;">TIPO MOVIMIENTO</th>
+                                <th class="th-header" style="width:120px;">CÓDIGO</th>
+                                <th class="th-header" style="width:250px;">MATERIAL</th>
+                                <th class="th-header" style="width:100px;">CANTIDAD</th>
+                                <th class="th-header" style="width:80px;">UNIDAD</th>
+                                <th class="th-header" style="width:200px;">RESPONSABLE / ENTREGA</th>
+                                <th class="th-header" style="width:250px;">OBSERVACIONES</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${rowsHtml}
+                        </tbody>
+                    </table>
+                </body>
+                </html>
+            `;
 
-            const workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, "Movimientos");
-            XLSX.writeFile(workbook, `Historial_Movimientos_${new Date().toISOString().slice(0,10)}.xlsx`);
+            const blob = new Blob([excelTemplate], { type: 'application/vnd.ms-excel;charset=utf-8' });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = `Historial_Movimientos_${config.projectName.replace(/\s+/g, '_')}_${new Date().toISOString().slice(0,10)}.xls`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // REDIMENSIONAMIENTO MANUAL DE COLUMNAS DE LA TABLA (RESIZER)
+        function initTableResizableColumns() {
+            const table = document.getElementById('mainInventoryTable');
+            if (!table) return;
+
+            const cols = table.querySelectorAll('.resizable-th');
+            cols.forEach(col => {
+                const resizer = col.querySelector('.resizer');
+                if (!resizer) return;
+
+                let x = 0;
+                let w = 0;
+
+                const mouseDownHandler = function (e) {
+                    x = e.clientX;
+                    const styles = window.getComputedStyle(col);
+                    w = parseInt(styles.width, 10);
+
+                    document.addEventListener('mousemove', mouseMoveHandler);
+                    document.addEventListener('mouseup', mouseUpHandler);
+                    resizer.classList.add('resizing');
+                };
+
+                const mouseMoveHandler = function (e) {
+                    const dx = e.clientX - x;
+                    col.style.width = `${w + dx}px`;
+                };
+
+                const mouseUpHandler = function () {
+                    document.removeEventListener('mousemove', mouseMoveHandler);
+                    document.removeEventListener('mouseup', mouseUpHandler);
+                    resizer.classList.remove('resizing');
+                };
+
+                resizer.addEventListener('mousedown', mouseDownHandler);
+            });
         }
 
         function openLoginModal() {
@@ -1322,7 +1530,6 @@
                     ? `<span class="px-2 py-0.5 bg-slate-100 text-slate-600 text-[10px] font-bold rounded border border-slate-300">BORRADOR</span>`
                     : `<span class="px-2 py-0.5 bg-emerald-50 text-emerald-700 text-[10px] font-bold rounded border border-emerald-200">PUBLICADO</span>`;
 
-                // EVALUACIÓN VENCIMIENTO
                 let expBadge = '<span class="text-slate-400">N/A</span>';
                 if (mat.expirationDate) {
                     const expDiffDays = Math.ceil((new Date(mat.expirationDate) - new Date()) / (1000 * 60 * 60 * 24));
@@ -1456,7 +1663,7 @@
             document.getElementById('matInitialStock').disabled = false;
             document.getElementById('matUnit').value = '';
             document.getElementById('matCode').value = `${config.prefix}-`;
-            document.getElementById('matEntryDate').value = new Date().toISOString().split('T')[0]; // Fecha actual sugerida
+            document.getElementById('matEntryDate').value = new Date().toISOString().split('T')[0];
             document.getElementById('matExpirationDate').value = '';
             
             document.getElementById('matImageBase64').value = '';
@@ -1492,7 +1699,7 @@
                 preview.classList.add('hidden');
             }
 
-            const standardUnits = ['und', 'm', 'kg', 'gal', 'caja', 'bolsa', 'rollos'];
+            const standardUnits = ['und', 'pza', 'm', 'm²', 'm³', 'kg', 'tn', 'gl', 'lt', 'cja', 'bls', 'rll', 'pln', 'tb', 'jgo', 'par'];
             if (standardUnits.includes(mat.unit)) {
                 document.getElementById('matUnit').value = mat.unit;
             } else {
@@ -1529,7 +1736,6 @@
             const currentMat = materials.find(m => m.id === id);
             const currentStock = currentMat ? currentMat.currentStock : (isNaN(initialStock) ? 0 : initialStock);
 
-            // FECHA DE INGRESO AHORA ES REQUISITO OBLIGATORIO PARA PUBLICAR
             const isComplete = code && code !== `${config.prefix}-` && name && category && unit && !isNaN(initialStock) && entryDate && location;
             const status = isComplete ? 'PUBLICADO' : 'BORRADOR';
 
@@ -1551,7 +1757,7 @@
             if (!error) {
                 closeModal('materialModal');
                 if (status === 'BORRADOR') {
-                    alert('⚠️ Material guardado como BORRADOR.\n\nFaltan completar campos obligatorios (incluyendo la Fecha de Ingreso). No se generará el código QR hasta completarlo.');
+                    alert('⚠️ Material guardado como BORRADOR.\n\nFaltan completar campos obligatorios (incluyendo Fecha de Ingreso). No se generará el código QR hasta completarlo.');
                 }
                 fetchAllDataFromSupabase();
             } else {
