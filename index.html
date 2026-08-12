@@ -17,9 +17,24 @@
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        /* Ajuste de texto en una sola fila sin saltos de línea */
+        /* Reglas CSS para proporciones y ajuste limpio de tabla */
         th, td {
             white-space: nowrap !important;
+        }
+        /* Scrollbar delgada y estética para el contenedor de la tabla */
+        .table-scroll-container::-webkit-scrollbar {
+            height: 6px;
+        }
+        .table-scroll-container::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 4px;
+        }
+        .table-scroll-container::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .table-scroll-container::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
         }
     </style>
 </head>
@@ -170,40 +185,40 @@
                 </div>
             </div>
 
-            <!-- Tabla de Inventario Sin Scroll Interno ni Redimensionamiento Manual -->
+            <!-- Tabla de Inventario con Contenedor Scrollable Proporcional -->
             <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                <div>
-                    <table id="mainInventoryTable" class="w-full text-left border-collapse">
+                <div class="overflow-x-auto table-scroll-container">
+                    <table id="mainInventoryTable" class="w-full text-left border-collapse min-w-[1050px]">
                         <thead>
-                            <tr class="bg-slate-100 border-b border-slate-200 text-slate-700 text-xs uppercase tracking-wider font-semibold">
-                                <th class="py-3 px-3 text-center">Foto</th>
-                                <th class="py-3 px-3">Estado</th>
-                                <th class="py-3 px-3">Código / SKU</th>
-                                <th class="py-3 px-3">Material</th>
-                                <th class="py-3 px-3">Categoría</th>
-                                <th class="py-3 px-3 text-center">Unidad / Abr.</th>
-                                <th class="py-3 px-3 text-center">Stock Inicial</th>
-                                <th class="py-3 px-3 text-center">Stock Actual</th>
-                                <th class="py-3 px-3">Fecha Ingreso</th>
-                                <th class="py-3 px-3">Vencimiento</th>
-                                <th class="py-3 px-3">Ubicación</th>
-                                <th class="py-3 px-3 text-center">Gestión Stock</th>
-                                <th class="py-3 px-3 text-center">Acciones</th>
+                            <tr class="bg-slate-100 border-b border-slate-200 text-slate-700 text-[11px] uppercase tracking-wider font-semibold">
+                                <th class="py-2.5 px-2 text-center w-12">Foto</th>
+                                <th class="py-2.5 px-2 text-center w-20">Estado</th>
+                                <th class="py-2.5 px-2.5 w-28">Código / SKU</th>
+                                <th class="py-2.5 px-2.5 min-w-[160px]">Material</th>
+                                <th class="py-2.5 px-2.5 w-28">Categoría</th>
+                                <th class="py-2.5 px-2 text-center w-20">Unidad</th>
+                                <th class="py-2.5 px-2 text-center w-24">Stock Inicial</th>
+                                <th class="py-2.5 px-2 text-center w-24">Stock Actual</th>
+                                <th class="py-2.5 px-2.5 w-28">Fecha Ingreso</th>
+                                <th class="py-2.5 px-2.5 w-28">Vencimiento</th>
+                                <th class="py-2.5 px-2.5 w-28">Ubicación</th>
+                                <th class="py-2.5 px-2 text-center w-36">Gestión Stock</th>
+                                <th class="py-2.5 px-2 text-center w-20">Acciones</th>
                             </tr>
                             <tr class="bg-slate-50 border-b border-slate-200 text-xs">
-                                <th class="p-2 bg-slate-100"></th>
-                                <th class="p-2 bg-slate-100"></th>
-                                <th class="p-2"><input type="text" id="filterInvCode" oninput="renderTable()" placeholder="Filtrar..." class="w-full px-2 py-1 text-xs border rounded focus:ring-1 focus:ring-indigo-500 focus:outline-none"></th>
-                                <th class="p-2"><input type="text" id="filterInvName" oninput="renderTable()" placeholder="Filtrar..." class="w-full px-2 py-1 text-xs border rounded focus:ring-1 focus:ring-indigo-500 focus:outline-none"></th>
-                                <th class="p-2"><input type="text" id="filterInvCategory" oninput="syncCategoryInput()" placeholder="Filtrar..." class="w-full px-2 py-1 text-xs border rounded focus:ring-1 focus:ring-indigo-500 focus:outline-none"></th>
-                                <th class="p-2"><input type="text" id="filterInvUnit" oninput="renderTable()" placeholder="Filtrar..." class="w-full px-2 py-1 text-xs border rounded focus:ring-1 focus:ring-indigo-500 focus:outline-none text-center"></th>
-                                <th class="p-2"><input type="text" id="filterInvInitial" oninput="renderTable()" placeholder="Filtrar..." class="w-full px-2 py-1 text-xs border rounded focus:ring-1 focus:ring-indigo-500 focus:outline-none text-center"></th>
-                                <th class="p-2"><input type="text" id="filterInvCurrent" oninput="renderTable()" placeholder="Filtrar..." class="w-full px-2 py-1 text-xs border rounded focus:ring-1 focus:ring-indigo-500 focus:outline-none text-center"></th>
-                                <th class="p-2"><input type="text" id="filterInvEntryDate" oninput="renderTable()" placeholder="Filtrar..." class="w-full px-2 py-1 text-xs border rounded focus:ring-1 focus:ring-indigo-500 focus:outline-none"></th>
-                                <th class="p-2"><input type="text" id="filterInvExpDate" oninput="renderTable()" placeholder="Filtrar..." class="w-full px-2 py-1 text-xs border rounded focus:ring-1 focus:ring-indigo-500 focus:outline-none"></th>
-                                <th class="p-2"><input type="text" id="filterInvLocation" oninput="renderTable()" placeholder="Filtrar..." class="w-full px-2 py-1 text-xs border rounded focus:ring-1 focus:ring-indigo-500 focus:outline-none"></th>
-                                <th class="p-2 bg-slate-100"></th>
-                                <th class="p-2 bg-slate-100"></th>
+                                <th class="p-1.5 bg-slate-100"></th>
+                                <th class="p-1.5 bg-slate-100"></th>
+                                <th class="p-1.5"><input type="text" id="filterInvCode" oninput="renderTable()" placeholder="Filtrar..." class="w-full px-1.5 py-1 text-[11px] border rounded focus:ring-1 focus:ring-indigo-500 focus:outline-none"></th>
+                                <th class="p-1.5"><input type="text" id="filterInvName" oninput="renderTable()" placeholder="Filtrar..." class="w-full px-1.5 py-1 text-[11px] border rounded focus:ring-1 focus:ring-indigo-500 focus:outline-none"></th>
+                                <th class="p-1.5"><input type="text" id="filterInvCategory" oninput="syncCategoryInput()" placeholder="Filtrar..." class="w-full px-1.5 py-1 text-[11px] border rounded focus:ring-1 focus:ring-indigo-500 focus:outline-none"></th>
+                                <th class="p-1.5"><input type="text" id="filterInvUnit" oninput="renderTable()" placeholder="Filtrar..." class="w-full px-1.5 py-1 text-[11px] border rounded focus:ring-1 focus:ring-indigo-500 focus:outline-none text-center"></th>
+                                <th class="p-1.5"><input type="text" id="filterInvInitial" oninput="renderTable()" placeholder="Filtrar..." class="w-full px-1.5 py-1 text-[11px] border rounded focus:ring-1 focus:ring-indigo-500 focus:outline-none text-center"></th>
+                                <th class="p-1.5"><input type="text" id="filterInvCurrent" oninput="renderTable()" placeholder="Filtrar..." class="w-full px-1.5 py-1 text-[11px] border rounded focus:ring-1 focus:ring-indigo-500 focus:outline-none text-center"></th>
+                                <th class="p-1.5"><input type="text" id="filterInvEntryDate" oninput="renderTable()" placeholder="Filtrar..." class="w-full px-1.5 py-1 text-[11px] border rounded focus:ring-1 focus:ring-indigo-500 focus:outline-none"></th>
+                                <th class="p-1.5"><input type="text" id="filterInvExpDate" oninput="renderTable()" placeholder="Filtrar..." class="w-full px-1.5 py-1 text-[11px] border rounded focus:ring-1 focus:ring-indigo-500 focus:outline-none"></th>
+                                <th class="p-1.5"><input type="text" id="filterInvLocation" oninput="renderTable()" placeholder="Filtrar..." class="w-full px-1.5 py-1 text-[11px] border rounded focus:ring-1 focus:ring-indigo-500 focus:outline-none"></th>
+                                <th class="p-1.5 bg-slate-100"></th>
+                                <th class="p-1.5 bg-slate-100"></th>
                             </tr>
                         </thead>
                         <tbody id="inventoryTableBody" class="divide-y divide-slate-100 text-xs sm:text-sm"></tbody>
@@ -226,8 +241,8 @@
             </div>
 
             <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                <div>
-                    <table class="w-full text-left border-collapse">
+                <div class="overflow-x-auto table-scroll-container">
+                    <table class="w-full text-left border-collapse min-w-[800px]">
                         <thead>
                             <tr class="bg-slate-100 border-b border-slate-200 text-slate-700 text-xs uppercase tracking-wider font-semibold">
                                 <th class="py-3 px-3">Fecha / Hora</th>
@@ -1471,69 +1486,69 @@
                 const isLowStock = mat.currentStock < config.lowStockThreshold;
 
                 const imgHtml = mat.imageUrl 
-                    ? `<img src="${mat.imageUrl}" alt="Material" class="w-9 h-9 object-cover rounded-lg border mx-auto">`
-                    : `<div class="w-9 h-9 bg-slate-100 rounded-lg flex items-center justify-center mx-auto text-slate-400"><i data-lucide="image" class="w-4 h-4"></i></div>`;
+                    ? `<img src="${mat.imageUrl}" alt="Material" class="w-8 h-8 object-cover rounded-lg border mx-auto">`
+                    : `<div class="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center mx-auto text-slate-400"><i data-lucide="image" class="w-4 h-4"></i></div>`;
 
                 const isDraft = mat.status === 'BORRADOR';
                 const statusBadge = isDraft
-                    ? `<span class="px-2 py-0.5 bg-slate-100 text-slate-600 text-[10px] font-bold rounded border border-slate-300">BORRADOR</span>`
-                    : `<span class="px-2 py-0.5 bg-emerald-50 text-emerald-700 text-[10px] font-bold rounded border border-emerald-200">PUBLICADO</span>`;
+                    ? `<span class="px-1.5 py-0.5 bg-slate-100 text-slate-600 text-[10px] font-bold rounded border border-slate-300">BORRADOR</span>`
+                    : `<span class="px-1.5 py-0.5 bg-emerald-50 text-emerald-700 text-[10px] font-bold rounded border border-emerald-200">PUBLICADO</span>`;
 
                 let expBadge = '<span class="text-slate-400">N/A</span>';
                 if (mat.expirationDate) {
                     const expDiffDays = Math.ceil((new Date(mat.expirationDate) - new Date()) / (1000 * 60 * 60 * 24));
                     if (mat.expirationDate < today) {
-                        expBadge = `<span class="px-2 py-0.5 bg-rose-100 text-rose-700 font-bold text-[10px] rounded border border-rose-200">${mat.expirationDate} (VENCIDO)</span>`;
+                        expBadge = `<span class="px-1.5 py-0.5 bg-rose-100 text-rose-700 font-bold text-[10px] rounded border border-rose-200">${mat.expirationDate}</span>`;
                     } else if (expDiffDays <= 30) {
-                        expBadge = `<span class="px-2 py-0.5 bg-amber-100 text-amber-700 font-bold text-[10px] rounded border border-amber-200">${mat.expirationDate} (POR VENCER)</span>`;
+                        expBadge = `<span class="px-1.5 py-0.5 bg-amber-100 text-amber-700 font-bold text-[10px] rounded border border-amber-200">${mat.expirationDate}</span>`;
                     } else {
-                        expBadge = `<span class="px-2 py-0.5 bg-emerald-50 text-emerald-700 font-semibold text-[10px] rounded border border-emerald-100">${mat.expirationDate}</span>`;
+                        expBadge = `<span class="px-1.5 py-0.5 bg-emerald-50 text-emerald-700 font-semibold text-[10px] rounded border border-emerald-100">${mat.expirationDate}</span>`;
                     }
                 }
 
                 const hasExits = logs.some(l => l.code.toUpperCase() === mat.code.toUpperCase() && l.type === 'SALIDA');
 
                 tr.innerHTML = `
-                    <td class="py-2 px-2 text-center">${imgHtml}</td>
-                    <td class="py-2.5 px-3 text-center">${statusBadge}</td>
-                    <td class="py-2.5 px-3 font-mono font-bold text-indigo-600">${mat.code}</td>
-                    <td class="py-2.5 px-3 font-medium">${mat.name}</td>
-                    <td class="py-2.5 px-3"><span class="px-2 py-0.5 bg-slate-100 text-slate-600 text-xs rounded-full border">${mat.category || 'N/A'}</span></td>
-                    <td class="py-2.5 px-3 text-center"><span class="px-2 py-0.5 bg-indigo-50 text-indigo-700 text-xs rounded font-semibold border border-indigo-100">${unitStr || 'N/A'}</span></td>
-                    <td class="py-2.5 px-3 text-center font-bold text-slate-500">${mat.initialStock} ${unitStr}</td>
-                    <td class="py-2.5 px-3 text-center">
+                    <td class="py-2 px-1.5 text-center">${imgHtml}</td>
+                    <td class="py-2 px-2 text-center">${statusBadge}</td>
+                    <td class="py-2 px-2.5 font-mono font-bold text-indigo-600 text-xs">${mat.code}</td>
+                    <td class="py-2 px-2.5 font-medium truncate max-w-[200px]" title="${mat.name}">${mat.name}</td>
+                    <td class="py-2 px-2.5"><span class="px-2 py-0.5 bg-slate-100 text-slate-600 text-xs rounded-full border">${mat.category || 'N/A'}</span></td>
+                    <td class="py-2 px-2 text-center"><span class="px-1.5 py-0.5 bg-indigo-50 text-indigo-700 text-xs rounded font-semibold border border-indigo-100">${unitStr || 'N/A'}</span></td>
+                    <td class="py-2 px-2 text-center font-bold text-slate-500">${mat.initialStock} ${unitStr}</td>
+                    <td class="py-2 px-2 text-center">
                         <span class="font-bold ${isLowStock ? 'text-amber-600 font-black' : 'text-slate-800'}">${mat.currentStock} ${unitStr}</span>
                     </td>
-                    <td class="py-2.5 px-3 text-slate-600 text-xs">${mat.entryDate || 'N/A'}</td>
-                    <td class="py-2.5 px-3 text-center">${expBadge}</td>
-                    <td class="py-2.5 px-3 text-slate-500">${mat.location || 'N/A'}</td>
-                    <td class="py-2.5 px-3 text-center">
+                    <td class="py-2 px-2.5 text-slate-600 text-xs">${mat.entryDate || 'N/A'}</td>
+                    <td class="py-2 px-2.5 text-center">${expBadge}</td>
+                    <td class="py-2 px-2.5 text-slate-500">${mat.location || 'N/A'}</td>
+                    <td class="py-2 px-2 text-center">
                         ${isAdmin ? `
-                            <div class="flex justify-center space-x-1 sm:space-x-2">
-                                <button onclick="openMovementModal('${mat.id}', 'SALIDA')" class="px-2 py-1 bg-rose-50 text-rose-600 hover:bg-rose-100 border border-rose-200 rounded text-[11px] sm:text-xs font-semibold flex items-center gap-1 transition">
-                                    <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i> Salida
+                            <div class="flex justify-center items-center space-x-1">
+                                <button onclick="openMovementModal('${mat.id}', 'SALIDA')" class="px-1.5 py-1 bg-rose-50 text-rose-600 hover:bg-rose-100 border border-rose-200 rounded text-[11px] font-semibold flex items-center gap-0.5 transition">
+                                    <i data-lucide="arrow-up-right" class="w-3 h-3"></i> Salida
                                 </button>
                                 ${hasExits ? `
-                                    <button onclick="openMovementModal('${mat.id}', 'DEVOLUCION')" class="px-2 py-1 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 border border-emerald-200 rounded text-[11px] sm:text-xs font-semibold flex items-center gap-1 transition">
-                                        <i data-lucide="arrow-down-left" class="w-3.5 h-3.5"></i> Devolución
+                                    <button onclick="openMovementModal('${mat.id}', 'DEVOLUCION')" class="px-1.5 py-1 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 border border-emerald-200 rounded text-[11px] font-semibold flex items-center gap-0.5 transition">
+                                        <i data-lucide="arrow-down-left" class="w-3 h-3"></i> Devolución
                                     </button>
                                 ` : `
-                                    <button disabled title="Sin salidas registradas" class="px-2 py-1 bg-slate-100 text-slate-400 border border-slate-200 rounded text-[11px] sm:text-xs font-semibold flex items-center gap-1 cursor-not-allowed opacity-60">
-                                        <i data-lucide="arrow-down-left" class="w-3.5 h-3.5"></i> Devolución
+                                    <button disabled title="Sin salidas registradas" class="px-1.5 py-1 bg-slate-100 text-slate-400 border border-slate-200 rounded text-[11px] font-semibold flex items-center gap-0.5 cursor-not-allowed opacity-60">
+                                        <i data-lucide="arrow-down-left" class="w-3 h-3"></i> Devolución
                                     </button>
                                 `}
                             </div>
                         ` : `<span class="text-xs text-slate-400">Lectura</span>`}
                     </td>
-                    <td class="py-2.5 px-3 text-center">
+                    <td class="py-2 px-2 text-center">
                         <div class="flex justify-center space-x-1">
                             ${!isDraft ? `
-                                <button onclick="showQR('${mat.code}', '${mat.name}')" title="Ver QR" class="p-1 text-slate-600 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg transition"><i data-lucide="qr-code" class="w-4 h-4"></i></button>
-                            ` : `<span class="p-1 text-slate-300" title="Complete todos los campos para generar QR"><i data-lucide="qr-code" class="w-4 h-4"></i></span>`}
+                                <button onclick="showQR('${mat.code}', '${mat.name}')" title="Ver QR" class="p-1 text-slate-600 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg transition"><i data-lucide="qr-code" class="w-3.5 h-3.5"></i></button>
+                            ` : `<span class="p-1 text-slate-300" title="Complete todos los campos para generar QR"><i data-lucide="qr-code" class="w-3.5 h-3.5"></i></span>`}
                             
                             ${isAdmin ? `
-                                <button onclick="editMaterial('${mat.id}')" title="Editar" class="p-1 text-slate-600 hover:bg-slate-100 rounded-lg transition"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
-                                <button onclick="deleteMaterial('${mat.id}')" title="Eliminar" class="p-1 text-rose-500 hover:bg-rose-50 rounded-lg transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                                <button onclick="editMaterial('${mat.id}')" title="Editar" class="p-1 text-slate-600 hover:bg-slate-100 rounded-lg transition"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i></button>
+                                <button onclick="deleteMaterial('${mat.id}')" title="Eliminar" class="p-1 text-rose-500 hover:bg-rose-50 rounded-lg transition"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
                             ` : ''}
                         </div>
                     </td>
@@ -1673,7 +1688,6 @@
             const initialStockInput = document.getElementById('matInitialStock').value;
             const initialStock = parseFloat(initialStockInput);
             
-            // Tratamiento de fechas vacías enviadas como NULL a Supabase
             const rawEntryDate = document.getElementById('matEntryDate').value;
             const entryDate = rawEntryDate ? rawEntryDate : null;
 
